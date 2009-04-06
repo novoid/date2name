@@ -1,0 +1,307 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Latest change: Fri Mar 27 00:27:30 CET 2009
+"""
+date2name
+~~~~~~~~~
+
+This script adds (or removes) datestamps to (or from) file(s)
+
+:copyright: (c) 2009 by Karl Voit <tools@Karl-Voit.at>
+:license: GPL v2 or any later version
+:bugreports: <tools@Karl-Voit.at>
+
+"""
+
+import re, os, time, logging, sys
+from optparse import OptionParser
+
+# global variables
+PROG_VERSION = "0.0.5"
+FORMATSTRING_COMPACT  = "%Y%m%d"
+FORMATSTRING_STANDARD = "%Y-%m-%d"
+FORMATSTRING_MONTH    = "%Y-%m"
+FORMATSTRING_WITHTIME = "%Y-%m-%d_%H:%M:%S"
+NODATESTAMP_PATTERN = re.compile('^\D')
+COMPACT_PATTERN     = re.compile('^\d{4,4}[01]\d[0123]\d[- _]')
+STANDARD_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[- _]')
+MONTH_PATTERN       = re.compile('^\d{4,4}-[01]\d[- _]')
+WITHTIME_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[ :_-][012]\d:[012345]\d:[012345]\d[- _]')
+
+# cmdline parsing
+USAGE = "\n\
+         %prog [options] file ...\n\
+\n\
+Per default, %prog gets the modification time of matching files\n\
+and directories and adds a datestamp in standard ISO 8601+ format\n\
+YYYY-MM-DD (http://datestamp.org/index.shtml) at the beginning of\n\
+the file- or directoryname.\n\
+If an existing timestamp is found, its style will be converted to the\n\
+selected ISO datestamp format but the numbers stays the same.\n\
+Executed with an examplefilename \"file\" this results e.g. in\n\
+\"2008-12-31_file\".\n\
+\n\
+Run %prog --help for usage hints"
+
+# pylint: disable-msg=C0103
+parser = OptionParser(usage=USAGE)
+parser.add_option("-d", "--directories", dest="onlydirectories",
+                  action="store_true",
+                  help="modify only directory names")
+parser.add_option("-f", "--files", dest="onlyfiles",
+                  action="store_true",
+                  help="modify only file names")
+parser.add_option("--compact", dest="compact",
+                  action="store_true",
+                  help="use compact datestamp             (YYYYMMDD)")
+parser.add_option("--month", dest="month",
+                  action="store_true",
+                  help="use datestamp with year and month (YYYY-MM)")
+parser.add_option("--withtime", dest="withtime",
+                  action="store_true",
+                  help="use datestamp including seconds   (YYYY-MM-DD_hh:mm:ss)")
+# parser.add_option("-r", "--remove", dest="remove",
+#                   action="store_true",
+#                   help="remove all known datestamps")
+parser.add_option("-m", "--mtime", dest="mtime",
+                  action="store_true",
+                  help="take modification time for datestamp [default]")
+parser.add_option("-c", "--ctime", dest="ctime",
+                  action="store_true",
+                  help="take creation time for datestamp")
+parser.add_option("-q", "--quiet", dest="quiet", action="store_true",
+                  help="do not output anything but just errors on console")
+parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
+                  help="enable verbose mode")
+parser.add_option("--nocorrections", dest="nocorrections", action="store_true",
+                  help="do not convert existing datestamps to new format")
+parser.add_option("-s", "--dryrun", dest="dryrun", action="store_true",
+        help="enable dryrun mode: just simulate what would happen, do not modify files or directories")
+parser.add_option("--version", dest="version", action="store_true",
+                  help="display version and exit")
+(options, args) = parser.parse_args()
+
+
+def handle_logging():
+    """Log handling and configuration"""
+
+    if options.verbose:
+        FORMAT = "%(levelname)-8s %(asctime)-15s %(message)s"
+        logging.basicConfig(level=logging.DEBUG, format=FORMAT)
+    elif options.quiet:
+        FORMAT = "%(levelname)-8s %(message)s"
+        logging.basicConfig(level=logging.CRITICAL, format=FORMAT)
+    else:
+        FORMAT = "%(message)s"
+        logging.basicConfig(level=logging.INFO, format=FORMAT)
+
+
+def get_converted_itemname(matched_pattern, item):
+    """returns a new filename based on found timestamp information and currently selected datestamp format"""
+
+    if matched_pattern == "compact":
+        logging.debug("item \"%s\" matches compact pattern, doing conversion" % item)
+        item_year = item[0:4]
+        item_month = item[4:6]
+        item_day = item[6:8]
+        name_without_datestamp = item[8:]
+    elif matched_pattern == "standard":
+        logging.debug("item \"%s\" matches standard pattern, doing conversion" % item)
+        item_year = item[0:4]
+        item_month = item[5:7]
+        item_day = item[8:10]
+        name_without_datestamp = item[10:]
+    elif matched_pattern == "month":
+        logging.debug("item \"%s\" matches month pattern, doing conversion" % item)
+        item_year = item[0:4]
+        item_month = item[5:7]
+        logging.info("%s no datestamp information for day, so I will take \"00\" for conversion" % item)
+        item_day = "00"
+        name_without_datestamp = item[7:]
+    elif matched_pattern == "withtime":
+        logging.debug("item \"%s\" matches withtime pattern, doing conversion" % item)
+        item_year = item[0:4]
+        item_month = item[5:7]
+        item_day = item[8:10]
+        logging.warn("%s ... time will be lost due to conversion" % item)
+        name_without_datestamp = item[19:]
+    else:
+        logging.error("unknown matched pattern (internal error)")
+    
+    logging.debug("item \"%s\" got year \"%s\" month \"%s\" day \"%s\"" % (item, item_year, item_month, item_day))
+    
+    if options.compact:
+        return item_year + item_month + item_day + name_without_datestamp
+    elif options.month:
+        return item_year + "-" + item_month + name_without_datestamp
+    elif options.withtime:
+        ## FIXXME: probably implement some kind of conversion to withtime-format
+        logging.warn("%s: Sorry! Conversion to withtime-format not implemented yet, taking standard format" % item)
+        return item_year + "-" + item_month + "-" + item_day + name_without_datestamp
+    else:
+        return item_year + "-" + item_month + "-" + item_day + name_without_datestamp
+
+
+def get_timestamp_from_file(formatstring, item):
+    """read out ctime or mtime of file and return new itemname"""
+
+    if options.ctime:
+        return time.strftime(formatstring, time.localtime( os.path.getctime(item) ) ) + "_" + item
+    elif options.mtime:
+        return time.strftime(formatstring, time.localtime( os.path.getmtime(item) ) ) + "_" + item
+    else:
+        logging.error("internal error: not ctime nor mtime chosen! You can correct this by giving a parameter")
+
+
+def generate_new_itemname(formatstring, item):
+    """generates the new itemname; considering options.nocorrections"""
+
+    if options.nocorrections or NODATESTAMP_PATTERN.match( item ):
+        logging.debug("item \"%s\" matches nodatestamp-pattern or option nocorrections is set: skipping further pattern matching" % item)
+        new_itemname = get_timestamp_from_file(formatstring, item)
+
+    elif WITHTIME_PATTERN.match( item ):
+        logging.debug("item \"%s\" matches withtime-pattern" % item)
+        if options.withtime:
+            logging.debug("old pattern is the same as the recognised, itemname stays the same")
+            return item
+        else:
+            new_itemname = get_converted_itemname("withtime", item)
+
+    elif STANDARD_PATTERN.match( item ):
+        logging.debug("item \"%s\" matches standard-pattern" % item)
+        if not options.withtime and not options.compact and not options.month:
+            logging.debug("old pattern is the same as the recognised, itemname stays the same")
+            return item
+        else:
+            new_itemname = get_converted_itemname("standard", item)
+
+    elif COMPACT_PATTERN.match( item ):
+        logging.debug("item \"%s\" matches compact-pattern" % item)
+        if options.compact:
+            logging.debug("old pattern is the same as the recognised, itemname stays the same")
+            return item
+        else:
+            new_itemname = get_converted_itemname("compact", item)
+
+    elif MONTH_PATTERN.match( item ):
+        logging.debug("item \"%s\" matches month-pattern" % item)
+        if options.month:
+            logging.debug("old pattern is the same as the recognised, itemname stays the same")
+            return item
+        else:
+            new_itemname = get_converted_itemname("month", item)
+
+    else:
+        logging.debug("item \"%s\" does not match any known datestamp-pattern" % item)
+        new_itemname = get_timestamp_from_file(formatstring, item)
+
+    logging.debug("new itemname is \"%s\"" % new_itemname)
+
+    return new_itemname
+
+
+
+def handle_item(item, formatstring):
+    """Handle timestamp adding or removing with directories or files"""
+
+    options.remove = False
+
+    if options.remove:
+        logging.debug("removing timestamp from file \"%s\"" % item)
+        ## FIXXME: implement datestamp removing
+        logging.error("Sorry! Removing of datestamps is not yet implemented")
+    else:
+        logging.debug("#######################+++~~- adding timestamp to file \"%s\"" % item)
+
+        if options.onlyfiles and os.path.isdir(item):
+            logging.debug("skipping directory \"%s\" because of command line option \"-f\"" % item)
+            return
+
+        if options.onlydirectories and os.path.isfile(item):
+            logging.debug("skipping file \"%s\" because of command line option \"-d\"" % item)
+            return
+
+        new_itemname = generate_new_itemname(formatstring, item)
+
+        logging.debug("new itemname for \"%s\" will be \"%s\"" % ( item, new_itemname ))
+
+        if options.dryrun:
+            if item == new_itemname:
+                logging.info("%s ... no modification" % item)
+            else:
+                logging.info("%-40s  >  %s" % ( item, new_itemname ) )
+        else:
+            if item == new_itemname:
+                logging.info("\"%s\" ... no modification" % item)
+            else:
+                logging.debug("\"%s\" > \"%s\"" % ( item, new_itemname ) )
+                logging.info("%-40s  >  %s" % ( item, new_itemname ) )
+                os.rename(item, new_itemname)
+
+
+def main():
+    """Main function [make pylint happy :)]"""
+
+    if options.version:
+        print os.path.basename(sys.argv[0]) + " " + PROG_VERSION
+        sys.exit(0)
+
+    if len(args) < 1:
+        parser.error("invalid usage")
+
+    if ( options.verbose and options.quiet ):
+        parser.error("please use either verbose (--verbose) or quiet (-q) option")
+
+    if ( options.onlyfiles and options.onlydirectories ):
+        parser.error("please use either option files (-f) or option directories (-f) or none of them (for renaming directories and files)")
+
+    if ( options.ctime and options.mtime ):
+        parser.error("please use either ctime (-c) or mtime (-m) option")
+
+    if ( not options.ctime and not options.mtime ):
+        options.mtime = True
+
+    if ( options.compact and options.withtime ) \
+                    or ( options.compact and options.month) \
+                    or ( options.month and options.withtime):
+        parser.error("please use either the default, short, month, or withtime format")
+
+    # log handling
+    handle_logging()
+
+    filelist = args[0:]
+    logging.debug("filelist: [%s]" % filelist)
+
+    if options.compact:
+        formatstring = FORMATSTRING_COMPACT
+    elif options.month:
+        formatstring = FORMATSTRING_MONTH
+    elif options.withtime:
+        formatstring = FORMATSTRING_WITHTIME
+    else:
+        logging.debug("no option given for format string; taking standard format")
+        formatstring = FORMATSTRING_STANDARD
+
+    for item in filelist:
+        if os.path.isdir(item):
+            logging.debug("is directory: %s" % item)
+            handle_item(item, formatstring)
+        elif os.path.isfile(item):
+            logging.debug("is file: %s" % item)
+            handle_item(item, formatstring)
+        else:
+            logging.critical("%s: is no file or directory (broken link?)" % item)
+
+
+
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        logging.info("Received KeyboardInterrupt")
+
+## END OF FILE #################################################################
+# vim:foldmethod=indent expandtab ai ft=python tw=120 fileencoding=utf-8 shiftwidth=4

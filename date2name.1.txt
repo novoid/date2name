@@ -1,0 +1,134 @@
+date2name(1)
+==========
+
+Name
+----
+date2name - add datestamps to file- and directorynames
+
+Synopsis
+--------
+date2name [ options ] <file[s]>
+
+Introduction
+------------
+
+date2name adds ISO 8601+ compatible datestamps (YYYY-MM-DD,
+link:http://datestamp.org/index.shtml[ISO 8601+ webpage]) to file- and
+directorynames or converts datestamps between known datestamp formats.
+
+Per default, date2name uses the modification time of matching files and
+directories to add a datestamp at the beginning of the file- or directoryname.
+
+Executed with an examplefilename "file" this results e.g. in "2008-12-31_file"
+if the 31st of december 2008 is the modification time of the file.
+
+If an existing timestamp is found, its style will be converted to the selected
+ISO datestamp format but the numbers stays the same.  
+
+Executed with an examplefilename "20071130-file", date2name reformats the
+existing datestamp to the (default) datestamp format. In this example it
+results in "2007-11-30-file".
+
+There are various options to modify the default behaviour of date2name.
+
+Options
+-------
+
+The following options are supported:
+
+  *-h*, *--help*::
+
+Display usage information and exit.
+
+  *-d*, *--directories*::
+
+Modify only directory names. Default is: modify directory names as well as file
+names (including links).
+
+  *-f*, *--files*::
+
+Modify only file names including links. Default is: modify directory names as
+well as file names.
+
+  *--compact*::
+
+Use compact datestamp format: YYYYMMDD
+
+  *--month*::
+
+Use datestamp format with year and month: YYYY-MM
+
+  *--withtime*::
+
+Use long datestamp format including timestamp: YYYY-MM-DD_hh:mm:ss
+
+  *-m*, *--mtime*::
+
+Use modification time for generating new datestamps. (default)
+
+  *-c*, *--ctime*::
+
+Use creation time for generating new datestamps.
+
+  *-q*, *--quiet*::
+
+Do not output anything but just errors on console.
+
+  *-v*, *--verbose*::
+  
+Be verbose when writing output. Good for investigating unwanted behaviour in
+combination with dryrun mode.
+
+  *-s*, *--dryrun*::
+
+Do not modify any names, just simulate a dry run.
+
+  *--nocorrections*::
+
+Do not modify existing datestamps, just add a datestamp to each item given.
+
+  *--version*::
+
+Print out version information and exit.
+
+Usage examples
+--------------
+
+  # date2name -fs *pdf
+
+Simulate, what datestamps would be added to all files with the extension "pdf".
+
+  # date2name -f *pdf
+
+Add datestamps to all files with the extension "pdf" in the current directory.
+
+  # date2name *
+
+Add datestamp to all files and directories in the current directory. If any
+known datestamp is found, modify the format to the default ISO format
+YYYY-MM-DD.
+
+  # date2name --withtime procmail.log
+
+Add a long datestamp (including timestamp) to the file "procmail.log".
+
+  # date2name --files --month 20*
+
+Add datestamps to all files beginning with "20" in the current directory in the
+format YYYY-MM or (more likely due to the "20"-condition) modify known
+datestamps to the YYYY-MM one.
+
+Online Ressources
+-----------------
+
+Check out the link:http://Karl-Voit.at/scripts/#date2name[date2name webpage].
+
+Bugs
+----
+Please report feedback, bugreports and wishes <<X7,to the author>>.
+
+[[X7]]
+Author
+------
+Karl Voit <tools@Karl-Voit.at>
+
