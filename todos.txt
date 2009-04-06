@@ -1,0 +1,21 @@
+-++########## Latest change: Wed Mar 11 11:01:12 CET 2009
+
+-++#######################   closed issues   ################################++-
+
+-++#######################   open issues   ##################################++-
+
+[20090406][][][] renaming items with timestamp *only*
+
+item = "20081231" -> "2008-12-31_20081231
+
+reason:
+itemname is not recognised as datestamp because of missing space or dash or underscore after the datestamp.
+
+
+-++#######################   permanent entries   ############################++-
+
+-++#######################   End   ##########################################++-
+
+ %%% Local Variables:
+## vim:foldmethod=expr
+## vim:fde=getline(v\:lnum)=~'^-\+\+#\\{10\\}'?0\:getline(v\:lnum)=~'^\\%([[].*[]]\\)\\{4\\}'?'>1'\:'1':
