@@ -11,6 +11,19 @@ item = "20081231" -> "2008-12-31_20081231
 reason:
 itemname is not recognised as datestamp because of missing space or dash or underscore after the datestamp.
 
+[20090418][][][] renaming fails when item is in other directory
+
+bash-3.2$ date2name ~/tmp/4gary/blanche_data_du.txt
+/Users/vk/tmp/4gary/blanche_data_du.txt   >  2009-04-18_/Users/vk/tmp/4gary/blanche_data_du.txt
+Traceback (most recent call last):
+  File "/Users/vk/bin/date2name", line 302, in <module>
+    main()
+  File "/Users/vk/bin/date2name", line 292, in main
+    handle_item(item, formatstring)
+  File "/Users/vk/bin/date2name", line 240, in handle_item
+    os.rename(item, new_itemname)
+OSError: [Errno 2] No such file or directory
+bash-3.2$ 
 
 -++#######################   permanent entries   ############################++-
 
