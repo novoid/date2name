@@ -60,7 +60,7 @@ Use datestamp format with year and month: YYYY-MM
 
   *--withtime*::
 
-Use long datestamp format including timestamp: YYYY-MM-DD_hh:mm:ss
+Use long datestamp format including timestamp: YYYY-MM-DDThh.mm.ss
 
   *-m*, *--mtime*::
 
@@ -118,10 +118,20 @@ Add datestamps to all files beginning with "20" in the current directory in the
 format YYYY-MM or (more likely due to the "20"-condition) modify known
 datestamps to the YYYY-MM one.
 
+Note on timestamp format including time
+---------------------------------------
+
+Other that defined in ISO 8601+ the delimiter between hours, minutes, and
+seconds is not a colon but a dot. Colons are causing several problems on
+different file systems and are there fore replaced with the (older) DIN 5008
+version with dots.
+
 Online Ressources
 -----------------
 
 Check out the link:http://Karl-Voit.at/scripts/#date2name[date2name webpage].
+
+ISO 8601+ annoted and DIN 5008 link:http://www.cl.cam.ac.uk/~mgk25/iso-time.html[Cambridge Webpage]
 
 Bugs
 ----
