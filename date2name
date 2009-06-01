@@ -17,16 +17,16 @@ import re, os, time, logging, sys
 from optparse import OptionParser
 
 # global variables
-PROG_VERSION = "0.0.5"
+PROG_VERSION = "0.0.6"
 FORMATSTRING_COMPACT  = "%Y%m%d"
 FORMATSTRING_STANDARD = "%Y-%m-%d"
 FORMATSTRING_MONTH    = "%Y-%m"
-FORMATSTRING_WITHTIME = "%Y-%m-%d_%H:%M:%S"
+FORMATSTRING_WITHTIME = "%Y-%m-%dT%H.%M.%S"
 NODATESTAMP_PATTERN = re.compile('^\D')
 COMPACT_PATTERN     = re.compile('^\d{4,4}[01]\d[0123]\d[- _]')
 STANDARD_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[- _]')
 MONTH_PATTERN       = re.compile('^\d{4,4}-[01]\d[- _]')
-WITHTIME_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[ :_-][012]\d:[012345]\d:[012345]\d[- _]')
+WITHTIME_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d:[012345]\d:[012345]\d[- _]')
 
 # cmdline parsing
 USAGE = "\n\
@@ -40,6 +40,10 @@ If an existing timestamp is found, its style will be converted to the\n\
 selected ISO datestamp format but the numbers stays the same.\n\
 Executed with an examplefilename \"file\" this results e.g. in\n\
 \"2008-12-31_file\".\n\
+Note: Other that defined in ISO 8601+ the delimiter between hours,\n\
+minutes, and seconds is not a colon but a dot. Colons are causing\n\
+several problems on different file systems and are there fore replaced\n\
+with the (older) DIN 5008 version with dots.\n\
 \n\
 Run %prog --help for usage hints"
 
@@ -59,7 +63,7 @@ parser.add_option("--month", dest="month",
                   help="use datestamp with year and month (YYYY-MM)")
 parser.add_option("--withtime", dest="withtime",
                   action="store_true",
-                  help="use datestamp including seconds   (YYYY-MM-DD_hh:mm:ss)")
+                  help="use datestamp including seconds   (YYYY-MM-DDThh.mm.ss)")
 # parser.add_option("-r", "--remove", dest="remove",
 #                   action="store_true",
 #                   help="remove all known datestamps")
