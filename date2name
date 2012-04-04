@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2011-09-25 14:17:42 vk>
+# Time-stamp: <2012-04-04 19:03:05 vk>
 
 """
 date2name
@@ -8,7 +8,7 @@ date2name
 
 This script adds (or removes) datestamps to (or from) file(s)
 
-:copyright: (c) 2009-2011 by Karl Voit <tools@Karl-Voit.at>
+:copyright: (c) 2009-2012 by Karl Voit <tools@Karl-Voit.at>
 :license: GPL v2 or any later version
 :bugreports: <tools@Karl-Voit.at>
 
@@ -17,7 +17,11 @@ This script adds (or removes) datestamps to (or from) file(s)
 ## changes:
 ##    * v0.0.1 -> 0.1: script is able to handle files and folders in (sub)directories
 
-import re, os, time, logging, sys
+import re
+import  os
+import  time
+import  logging
+import  sys
 from optparse import OptionParser
 
 # global variables
@@ -135,9 +139,9 @@ def get_converted_basename(matched_pattern, item):
         name_without_datestamp = item[19:]
     else:
         logging.error("unknown matched pattern (internal error)")
-    
+
     logging.debug("item \"%s\" got year \"%s\" month \"%s\" day \"%s\"" % (item, item_year, item_month, item_day))
-    
+
     if options.compact:
         return item_year + item_month + item_day + name_without_datestamp
     elif options.month:
@@ -154,9 +158,9 @@ def get_timestamp_from_file(formatstring, item):
     """read out ctime or mtime of file and return new itemname"""
 
     if options.ctime:
-        return time.strftime(formatstring, time.localtime( os.path.getctime(item) ) ) + "_" + item
+        return time.strftime(formatstring, time.localtime(os.path.getctime(item))) + "_" + item
     elif options.mtime:
-        return time.strftime(formatstring, time.localtime( os.path.getmtime(item) ) ) + "_" + item
+        return time.strftime(formatstring, time.localtime(os.path.getmtime(item))) + "_" + item
     else:
         logging.error("internal error: not ctime nor mtime chosen! You can correct this by giving a parameter")
 
@@ -164,11 +168,12 @@ def get_timestamp_from_file(formatstring, item):
 def generate_new_basename(formatstring, basename):
     """generates the new itemname; considering options.nocorrections"""
 
-    if options.nocorrections or NODATESTAMP_PATTERN.match( basename ):
-        logging.debug("basename \"%s\" matches nodatestamp-pattern or option nocorrections is set: skipping further pattern matching" % basename)
+    if options.nocorrections or NODATESTAMP_PATTERN.match(basename):
+        logging.debug("basename \"%s\" matches nodatestamp-pattern or option nocorrections " + \
+                          "is set: skipping further pattern matching" % basename)
         new_basename = get_timestamp_from_file(formatstring, basename)
 
-    elif WITHTIME_PATTERN.match( basename ):
+    elif WITHTIME_PATTERN.match(basename):
         logging.debug("basename \"%s\" matches withtime-pattern" % basename)
         if options.withtime:
             logging.debug("old pattern is the same as the recognised, basename stays the same")
@@ -176,7 +181,7 @@ def generate_new_basename(formatstring, basename):
         else:
             new_basename = get_converted_basename("withtime", basename)
 
-    elif STANDARD_PATTERN.match( basename ):
+    elif STANDARD_PATTERN.match(basename):
         logging.debug("basename \"%s\" matches standard-pattern" % basename)
         if not options.withtime and not options.compact and not options.month:
             logging.debug("old pattern is the same as the recognised, basename stays the same")
@@ -184,7 +189,7 @@ def generate_new_basename(formatstring, basename):
         else:
             new_basename = get_converted_basename("standard", basename)
 
-    elif COMPACT_PATTERN.match( basename ):
+    elif COMPACT_PATTERN.match(basename):
         logging.debug("basename \"%s\" matches compact-pattern" % basename)
         if options.compact:
             logging.debug("old pattern is the same as the recognised, basename stays the same")
@@ -192,7 +197,7 @@ def generate_new_basename(formatstring, basename):
         else:
             new_basename = get_converted_basename("compact", basename)
 
-    elif MONTH_PATTERN.match( basename ):
+    elif MONTH_PATTERN.match(basename):
         logging.debug("basename \"%s\" matches month-pattern" % basename)
         if options.month:
             logging.debug("old pattern is the same as the recognised, basename stays the same")
@@ -235,19 +240,19 @@ def handle_item(path, basename, formatstring):
 
         new_basename = generate_new_basename(formatstring, basename)
 
-        logging.debug("new itemname for \"%s\" will be \"%s\"" % ( basename, new_basename ))
+        logging.debug("new itemname for \"%s\" will be \"%s\"" % (basename, new_basename))
 
         if options.dryrun:
             if basename == new_basename:
                 logging.info("%s ... no modification" % basename)
             else:
-                logging.info("%-40s  >  %s" % ( get_full_name(path,basename), new_basename ) )
+                logging.info("%-40s  >  %s" % (get_full_name(path, basename), new_basename))
         else:
             if basename == new_basename:
-                logging.info("\"%s\" ... no modification" % get_full_name(path,basename))
+                logging.info("\"%s\" ... no modification" % get_full_name(path, basename))
             else:
-                logging.debug("\"%s\" > \"%s\"" % ( get_full_name(path,basename), new_basename ) )
-                logging.info("%-40s  >  %s" % ( get_full_name(path, basename), new_basename ) )
+                logging.debug("\"%s\" > \"%s\"" % (get_full_name(path, basename), new_basename))
+                logging.info("%-40s  >  %s" % (get_full_name(path, basename), new_basename))
                 os.rename(basename, new_basename)
 
 
@@ -261,21 +266,21 @@ def main():
     if len(args) < 1:
         parser.error("invalid usage")
 
-    if ( options.verbose and options.quiet ):
+    if (options.verbose and options.quiet):
         parser.error("please use either verbose (--verbose) or quiet (-q) option")
 
-    if ( options.onlyfiles and options.onlydirectories ):
+    if (options.onlyfiles and options.onlydirectories):
         parser.error("please use either option files (-f) or option directories (-f) or none of them (for renaming directories and files)")
 
-    if ( options.ctime and options.mtime ):
+    if (options.ctime and options.mtime):
         parser.error("please use either ctime (-c) or mtime (-m) option")
 
-    if ( not options.ctime and not options.mtime ):
+    if (not options.ctime and not options.mtime):
         options.mtime = True
 
-    if ( options.compact and options.withtime ) \
-                    or ( options.compact and options.month) \
-                    or ( options.month and options.withtime):
+    if (options.compact and options.withtime) \
+                    or (options.compact and options.month) \
+                    or (options.month and options.withtime):
         parser.error("please use either the default, short, month, or withtime format")
 
     # log handling
@@ -313,9 +318,6 @@ def main():
 
         else:
             logging.critical("%s: is no file or directory (broken link?)" % item)
-
-
-
 
 
 if __name__ == "__main__":
