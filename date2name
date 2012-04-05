@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2012-04-04 19:03:05 vk>
+# Time-stamp: <2012-04-05 15:07:43 vk>
 
 """
 date2name
@@ -169,8 +169,8 @@ def generate_new_basename(formatstring, basename):
     """generates the new itemname; considering options.nocorrections"""
 
     if options.nocorrections or NODATESTAMP_PATTERN.match(basename):
-        logging.debug("basename \"%s\" matches nodatestamp-pattern or option nocorrections " + \
-                          "is set: skipping further pattern matching" % basename)
+        logging.debug("basename \"" + basename + "\" matches nodatestamp-pattern or option nocorrections " + \
+                          "is set: skipping further pattern matching")
         new_basename = get_timestamp_from_file(formatstring, basename)
 
     elif WITHTIME_PATTERN.match(basename):
