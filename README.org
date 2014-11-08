@@ -35,3 +35,29 @@ Run "date2name --help" for usage hints
 :   -s, --dryrun       enable dryrun mode: just simulate what would happen, do
 :                      not modify files or directories
 :   --version          display version and exit
+
+* Related tools and workflows
+
+This tool is part of a tool-set which I use to manage my digital files
+such as photographs. My work-flows are described in [[http://karl-voit.at/managing-digital-photographs/][this blog posting]]
+you might like to read.
+
+In short:
+
+For *tagging*, please refer to [[https://github.com/novoid/filetag][filetag]] and its documentation.
+
+See [[https://github.com/novoid/date2name][date2name]] for easily adding ISO *time-stamps or date-stamps* to
+files.
+
+For *easily naming and tagging* files within file browsers that allow
+integration of external tools, see [[https://github.com/novoid/appendfilename][appendfilename]] (once more) and
+[[https://github.com/novoid/filetag][filetag]].
+
+Moving to the archive folders is done using [[https://github.com/novoid/move2archive][move2archive]].
+
+Having tagged photographs gives you many advantages. For example, I
+automatically [[https://github.com/novoid/set_desktop_background_according_to_season][choose my *desktop background image* according to the
+current season]].
+
+Files containing an ISO time/date-stamp gets indexed by the
+filename-module of [[https://github.com/novoid/Memacs][Memacs]].
