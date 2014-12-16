@@ -23,7 +23,7 @@ Executed with an examplefilename "file" this results e.g. in "2008-12-31_file"
 if the 31st of december 2008 is the modification time of the file.
 
 If an existing timestamp is found, its style will be converted to the selected
-ISO datestamp format but the numbers stays the same.  
+ISO datestamp format but the numbers stays the same.
 
 Executed with an examplefilename "20071130-file", date2name reformats the
 existing datestamp to the (default) datestamp format. In this example it
@@ -50,15 +50,15 @@ names (including links).
 Modify only file names including links. Default is: modify directory names as
 well as file names.
 
-  *--compact*::
+  *-C* *--compact*::
 
 Use compact datestamp format: YYYYMMDD
 
-  *--month*::
+  *-M* *--month*::
 
 Use datestamp format with year and month: YYYY-MM
 
-  *--withtime*::
+  *-w* *--withtime*::
 
 Use long datestamp format including timestamp: YYYY-MM-DDThh.mm.ss
 
@@ -75,7 +75,7 @@ Use creation time for generating new datestamps.
 Do not output anything but just errors on console.
 
   *-v*, *--verbose*::
-  
+
 Be verbose when writing output. Good for investigating unwanted behaviour in
 combination with dryrun mode.
 
@@ -141,4 +141,3 @@ Please report feedback, bugreports and wishes <<X7,to the author>>.
 Author
 ------
 Karl Voit <tools@Karl-Voit.at>
-
