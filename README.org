@@ -2,7 +2,7 @@
 
 Per default, date2name gets the modification time of matching files
 and directories and adds a datestamp in standard ISO 8601+ format
-YYYY-MM-DD (http://datestamp.org/index.shtml) at the beginning of
+YYYY-MM-DD (http://datestamps.org/index.shtml) at the beginning of
 the file- or directoryname.
 
 If an existing timestamp is found, its style will be converted to the

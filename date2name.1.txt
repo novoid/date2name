@@ -13,7 +13,7 @@ Introduction
 ------------
 
 date2name adds ISO 8601+ compatible datestamps (YYYY-MM-DD,
-link:http://datestamp.org/index.shtml[ISO 8601+ webpage]) to file- and
+link:http://datestamps.org/index.shtml[ISO 8601+ webpage]) to file- and
 directorynames or converts datestamps between known datestamp formats.
 
 Per default, date2name uses the modification time of matching files and
