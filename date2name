@@ -42,7 +42,7 @@ USAGE = "\n\
 \n\
 Per default, %prog gets the modification time of matching files\n\
 and directories and adds a datestamp in standard ISO 8601+ format\n\
-YYYY-MM-DD (http://datestamp.org/index.shtml) at the beginning of\n\
+YYYY-MM-DD (http://datestamps.org/index.shtml) at the beginning of\n\
 the file- or directoryname.\n\
 If an existing timestamp is found, its style will be converted to the\n\
 selected ISO datestamp format but the numbers stays the same.\n\
