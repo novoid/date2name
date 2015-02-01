@@ -2,7 +2,7 @@
 
 Per default, date2name gets the modification time of matching files
 and directories and adds a datestamp in standard ISO 8601+ format
-YYYY-MM-DD (http://datestamp.org/index.shtml) at the beginning of
+YYYY-MM-DD (http://datestamps.org/index.shtml) at the beginning of
 the file- or directoryname.
 
 If an existing timestamp is found, its style will be converted to the
@@ -15,7 +15,7 @@ minutes, and seconds is not a colon but a dot. Colons are causing
 several problems on different file systems and are there fore replaced
 with the (older) DIN 5008 version with dots.
 
-: Usage: 
+: Usage:
 :          date2name [options] file ...
 
 Run "date2name --help" for usage hints
@@ -24,9 +24,9 @@ Run "date2name --help" for usage hints
 :   -h, --help         show this help message and exit
 :   -d, --directories  modify only directory names
 :   -f, --files        modify only file names
-:   --compact          use compact datestamp             (YYYYMMDD)
-:   --month            use datestamp with year and month (YYYY-MM)
-:   --withtime         use datestamp including seconds   (YYYY-MM-DDThh.mm.ss)
+:   -C, --compact      use compact datestamp             (YYYYMMDD)
+:   -M, --month        use datestamp with year and month (YYYY-MM)
+:   -w, --withtime     use datestamp including seconds   (YYYY-MM-DDThh.mm.ss)
 :   -m, --mtime        take modification time for datestamp [default]
 :   -c, --ctime        take creation time for datestamp
 :   -q, --quiet        do not output anything but just errors on console
