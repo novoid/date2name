@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2015-02-01 11:41:13 vk>
+# Time-stamp: <2015-02-01 12:22:01 vk>
 
 """
 date2name
@@ -36,6 +36,7 @@ STANDARD_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[- _]')
 MONTH_PATTERN       = re.compile('^\d{4,4}-[01]\d[- _]')
 WITHTIME_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d[:.-][012345]\d([:.-][012345]\d)?[- _]')
 WITHSECONDS_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d[:.-][012345]\d[:.-][012345]\d[- _]')
+MAX_PATHLENGTH = 255  ## os.pathconf('/', 'PC_PATH_MAX') may be longer but os.rename() seems to have hard-coded 256
 
 # cmdline parsing
 USAGE = "\n\
@@ -258,7 +259,15 @@ def handle_item(path, basename, formatstring):
             else:
                 logging.debug("\"%s\" > \"%s\"" % (get_full_name(path, basename), new_basename))
                 logging.info("%-40s  >  %s" % (get_full_name(path, basename), new_basename))
-                os.rename(basename, new_basename)
+                if len(new_basename) > MAX_PATHLENGTH:
+                    logging.error("ERROR: the current file needs to be renamed with a file name length of " +
+                                  "%i which is greater than %i. " % (len(new_basename), MAX_PATHLENGTH) +
+                                  "This usually causes \"[Errno 36] File name too long\" and therefore " +
+                                  "I ignore this file for now. Please shorten file name for at " +
+                                  "least %i characters and try again." % (len(new_basename)-MAX_PATHLENGTH))
+                    sys.exit(1)
+                else:
+                    os.rename(basename, new_basename)
 
 
 def main():
