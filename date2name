@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2012-04-05 15:07:43 vk>
+# Time-stamp: <2015-02-01 11:41:13 vk>
 
 """
 date2name
@@ -34,7 +34,8 @@ NODATESTAMP_PATTERN = re.compile('^\D')
 COMPACT_PATTERN     = re.compile('^\d{4,4}[01]\d[0123]\d[- _]')
 STANDARD_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[- _]')
 MONTH_PATTERN       = re.compile('^\d{4,4}-[01]\d[- _]')
-WITHTIME_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d:[012345]\d:[012345]\d[- _]')
+WITHTIME_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d[:.-][012345]\d([:.-][012345]\d)?[- _]')
+WITHSECONDS_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d[:.-][012345]\d[:.-][012345]\d[- _]')
 
 # cmdline parsing
 USAGE = "\n\
@@ -136,7 +137,11 @@ def get_converted_basename(matched_pattern, item):
         item_month = item[5:7]
         item_day = item[8:10]
         logging.warn("%s ... time will be lost due to conversion" % item)
-        name_without_datestamp = item[19:]
+        if WITHSECONDS_PATTERN.match(item):
+            name_without_datestamp = item[19:]
+        else:
+            ## time-stamp only with hours and minutes:
+            name_without_datestamp = item[16:]
     else:
         logging.error("unknown matched pattern (internal error)")
 
