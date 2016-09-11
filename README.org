@@ -1,3 +1,4 @@
+
 * Handling time-stamps and date-stamps in file names
 
 Per default, date2name gets the modification time of matching files
@@ -35,6 +36,10 @@ Run "date2name --help" for usage hints
 :   -s, --dryrun       enable dryrun mode: just simulate what would happen, do
 :                      not modify files or directories
 :   --version          display version and exit
+
+* Installation
+
+Get it from [[https://github.com/novoid/date2name][GitHub]] or install it via «pip install date2name».
 
 * Related tools and workflows
 
