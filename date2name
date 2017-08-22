@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2015-02-01 12:22:01 vk>
+# Time-stamp: <2017-08-22 13:04:04 vk>
 
 """
 date2name
@@ -274,7 +274,7 @@ def main():
     """Main function [make pylint happy :)]"""
 
     if options.version:
-        print os.path.basename(sys.argv[0]) + " " + PROG_VERSION
+        print(os.path.basename(sys.argv[0]) + " " + PROG_VERSION)
         sys.exit(0)
 
     if len(args) < 1:
