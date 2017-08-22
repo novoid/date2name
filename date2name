@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2017-08-22 13:04:04 vk>
+PROG_VERSION = u"Time-stamp: <2017-08-22 13:06:21 vk>"
 
 """
 date2name
@@ -25,7 +25,7 @@ import  sys
 from optparse import OptionParser
 
 # global variables
-PROG_VERSION = "0.1"
+PROG_VERSION_DATE = PROG_VERSION[13:23]
 FORMATSTRING_COMPACT  = "%Y%m%d"
 FORMATSTRING_STANDARD = "%Y-%m-%d"
 FORMATSTRING_MONTH    = "%Y-%m"
@@ -274,7 +274,7 @@ def main():
     """Main function [make pylint happy :)]"""
 
     if options.version:
-        print(os.path.basename(sys.argv[0]) + " " + PROG_VERSION)
+        print(os.path.basename(sys.argv[0]) + " " + PROG_VERSION_DATE)
         sys.exit(0)
 
     if len(args) < 1:
