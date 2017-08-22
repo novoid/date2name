@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2017-08-22 13:06:21 vk>"
+PROG_VERSION = u"Time-stamp: <2017-08-22 13:07:51 vk>"
 
 """
 date2name
@@ -13,9 +13,6 @@ This script adds (or removes) datestamps to (or from) file(s)
 :bugreports: <tools@Karl-Voit.at>
 
 """
-
-## changes:
-##    * v0.0.1 -> 0.1: script is able to handle files and folders in (sub)directories
 
 import re
 import  os
@@ -36,7 +33,7 @@ STANDARD_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[- _]')
 MONTH_PATTERN       = re.compile('^\d{4,4}-[01]\d[- _]')
 WITHTIME_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d[:.-][012345]\d([:.-][012345]\d)?[- _]')
 WITHSECONDS_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d[:.-][012345]\d[:.-][012345]\d[- _]')
-MAX_PATHLENGTH = 255  ## os.pathconf('/', 'PC_PATH_MAX') may be longer but os.rename() seems to have hard-coded 256
+MAX_PATHLENGTH = 255  # os.pathconf('/', 'PC_PATH_MAX') may be longer but os.rename() seems to have hard-coded 256
 
 # cmdline parsing
 USAGE = "\n\
@@ -90,7 +87,7 @@ parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
 parser.add_option("--nocorrections", dest="nocorrections", action="store_true",
                   help="do not convert existing datestamps to new format")
 parser.add_option("-s", "--dryrun", dest="dryrun", action="store_true",
-        help="enable dryrun mode: just simulate what would happen, do not modify files or directories")
+                  help="enable dryrun mode: just simulate what would happen, do not modify files or directories")
 parser.add_option("--version", dest="version", action="store_true",
                   help="display version and exit")
 (options, args) = parser.parse_args()
@@ -141,7 +138,7 @@ def get_converted_basename(matched_pattern, item):
         if WITHSECONDS_PATTERN.match(item):
             name_without_datestamp = item[19:]
         else:
-            ## time-stamp only with hours and minutes:
+            # time-stamp only with hours and minutes:
             name_without_datestamp = item[16:]
     else:
         logging.error("unknown matched pattern (internal error)")
@@ -153,7 +150,7 @@ def get_converted_basename(matched_pattern, item):
     elif options.month:
         return item_year + "-" + item_month + name_without_datestamp
     elif options.withtime:
-        ## FIXXME: probably implement some kind of conversion to withtime-format
+        # FIXXME: probably implement some kind of conversion to withtime-format
         logging.warn("%s: Sorry! Conversion to withtime-format not implemented yet, taking standard format" % item)
         return item_year + "-" + item_month + "-" + item_day + name_without_datestamp
     else:
@@ -175,8 +172,8 @@ def generate_new_basename(formatstring, basename):
     """generates the new itemname; considering options.nocorrections"""
 
     if options.nocorrections or NODATESTAMP_PATTERN.match(basename):
-        logging.debug("basename \"" + basename + "\" matches nodatestamp-pattern or option nocorrections " + \
-                          "is set: skipping further pattern matching")
+        logging.debug("basename \"" + basename + "\" matches nodatestamp-pattern or option nocorrections " +
+                      "is set: skipping further pattern matching")
         new_basename = get_timestamp_from_file(formatstring, basename)
 
     elif WITHTIME_PATTERN.match(basename):
@@ -231,7 +228,7 @@ def handle_item(path, basename, formatstring):
 
     if options.remove:
         logging.debug("removing timestamp from base \"%s\"" % basename)
-        ## FIXXME: implement datestamp removing
+        # FIXXME: implement datestamp removing
         logging.error("Sorry! Removing of datestamps is not yet implemented")
     else:
         logging.debug("#######################+++~~- adding timestamp to base \"%s\"" % basename)
@@ -293,8 +290,8 @@ def main():
         options.mtime = True
 
     if (options.compact and options.withtime) \
-                    or (options.compact and options.month) \
-                    or (options.month and options.withtime):
+       or (options.compact and options.month) \
+       or (options.month and options.withtime):
         parser.error("please use either the default, short, month, or withtime format")
 
     # log handling
@@ -340,5 +337,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logging.info("Received KeyboardInterrupt")
 
-## END OF FILE #################################################################
+# END OF FILE #################################################################
 # vim:foldmethod=indent expandtab ai ft=python tw=120 fileencoding=utf-8 shiftwidth=4
