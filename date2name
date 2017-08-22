@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2017-08-22 13:07:51 vk>"
+PROG_VERSION = u"Time-stamp: <2017-08-22 13:15:23 vk>"
 
 """
 date2name
@@ -231,7 +231,7 @@ def handle_item(path, basename, formatstring):
         # FIXXME: implement datestamp removing
         logging.error("Sorry! Removing of datestamps is not yet implemented")
     else:
-        logging.debug("#######################+++~~- adding timestamp to base \"%s\"" % basename)
+        logging.debug("••••••••••••••••········· adding timestamp to base \"%s\"" % basename)
 
         if options.onlyfiles and os.path.isdir(basename):
             logging.debug("skipping directory \"%s\" because of command line option \"-f\"" % basename)
@@ -247,15 +247,15 @@ def handle_item(path, basename, formatstring):
 
         if options.dryrun:
             if basename == new_basename:
-                logging.info("%s ... no modification" % basename)
+                logging.info("%s … no modification" % basename)
             else:
-                logging.info("%-40s  >  %s" % (get_full_name(path, basename), new_basename))
+                logging.info("%-40s  →  %s" % (get_full_name(path, basename), new_basename))
         else:
             if basename == new_basename:
-                logging.info("\"%s\" ... no modification" % get_full_name(path, basename))
+                logging.info("\"%s\" … no modification" % get_full_name(path, basename))
             else:
-                logging.debug("\"%s\" > \"%s\"" % (get_full_name(path, basename), new_basename))
-                logging.info("%-40s  >  %s" % (get_full_name(path, basename), new_basename))
+                logging.debug("\"%s\" → \"%s\"" % (get_full_name(path, basename), new_basename))
+                logging.info("%-40s  →  %s" % (get_full_name(path, basename), new_basename))
                 if len(new_basename) > MAX_PATHLENGTH:
                     logging.error("ERROR: the current file needs to be renamed with a file name length of " +
                                   "%i which is greater than %i. " % (len(new_basename), MAX_PATHLENGTH) +
