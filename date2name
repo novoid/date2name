@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2017-08-22 13:15:23 vk>"
+PROG_VERSION = u"Time-stamp: <2017-08-26 11:49:23 vk>"
 
 """
 date2name
@@ -31,7 +31,8 @@ NODATESTAMP_PATTERN = re.compile('^\D')
 COMPACT_PATTERN     = re.compile('^\d{4,4}[01]\d[0123]\d[- _]')
 STANDARD_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[- _]')
 MONTH_PATTERN       = re.compile('^\d{4,4}-[01]\d[- _]')
-WITHTIME_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d[:.-][012345]\d([:.-][012345]\d)?[- _]')
+WITHTIME_AND_SECONDS_PATTERN  = re.compile('^\d{4,4}-[01]\d-[0123]\d([T :_-])([012]\d)([:.-])([012345]\d)([:.-])([012345]\d)[- _.]')
+WITHTIME_NO_SECONDS_PATTERN   = re.compile('^\d{4,4}-[01]\d-[0123]\d([T :_-])([012]\d)([:.-])([012345]\d)[- _.]')
 WITHSECONDS_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d[:.-][012345]\d[:.-][012345]\d[- _]')
 MAX_PATHLENGTH = 255  # os.pathconf('/', 'PC_PATH_MAX') may be longer but os.rename() seems to have hard-coded 256
 
@@ -171,16 +172,35 @@ def get_timestamp_from_file(formatstring, item):
 def generate_new_basename(formatstring, basename):
     """generates the new itemname; considering options.nocorrections"""
 
+    withtime_and_seconds_components = WITHTIME_AND_SECONDS_PATTERN.match(basename)
+    withtime_no_seconds_components = WITHTIME_NO_SECONDS_PATTERN.match(basename)
+
     if options.nocorrections or NODATESTAMP_PATTERN.match(basename):
         logging.debug("basename \"" + basename + "\" matches nodatestamp-pattern or option nocorrections " +
                       "is set: skipping further pattern matching")
         new_basename = get_timestamp_from_file(formatstring, basename)
 
-    elif WITHTIME_PATTERN.match(basename):
-        logging.debug("basename \"%s\" matches withtime-pattern" % basename)
+    elif withtime_and_seconds_components:
+        logging.debug("basename \"%s\" matches withtime-and-seconds pattern" % basename)
         if options.withtime:
-            logging.debug("old pattern is the same as the recognised, basename stays the same")
-            return basename
+            if not (withtime_and_seconds_components.group(1) == 'T' and withtime_and_seconds_components.group(3) == '.' and withtime_and_seconds_components.group(5) == '.'):
+                logging.debug("old time pattern does not match the ISO pattern for the delimiter characters. I will modify them.")
+                return basename[0:10] + 'T' + basename[11:13] + '.' + basename[14:16] + '.' + basename[17:]
+            else:
+                logging.debug("old pattern is the same as the recognised, basename stays the same")
+                return basename
+        else:
+            new_basename = get_converted_basename("withtime", basename)
+
+    elif withtime_no_seconds_components:
+        logging.debug("basename \"%s\" matches withtime-no-seconds pattern" % basename)
+        if options.withtime:
+            if not (withtime_no_seconds_components.group(1) == 'T' and withtime_and_seconds_components.group(3) == '.'):
+                logging.debug("old time pattern does not match the ISO pattern for the delimiter characters. I will modify them.")
+                return basename[0:10] + 'T' + basename[11:13] + '.' + basename[14:]
+            else:
+                logging.debug("old pattern is the same as the recognised, basename stays the same")
+                return basename
         else:
             new_basename = get_converted_basename("withtime", basename)
 
