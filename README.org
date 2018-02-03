@@ -125,7 +125,7 @@ list of selected items to a single call of date2name.
 ** Integration into FreeCommander
 
 [[http://freecommander.com/en/summary/][FreeCommander]] is a [[https://en.wikipedia.org/wiki/File_manager#Orthodox_file_managers][orthodox file manager]] for Windows. You can add
-filetags as an favorite command:
+date2name as an favorite command:
 
 - Tools → Favorite tools → Favorite tools edit... (S-C-y)
   - Create new toolbar (if none is present)
