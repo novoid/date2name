@@ -1,5 +1,6 @@
-
 * Handling time-stamps and date-stamps in file names
+
+[[file:screencast.gif]]
 
 Per default, date2name gets the modification time of matching files
 and directories and adds a datestamp in standard ISO 8601+ format
