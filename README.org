@@ -1,6 +1,6 @@
 * Handling time-stamps and date-stamps in file names
 
-[[file:screencast.gif]]
+[[file:bin/screencast.gif]]
 
 Per default, date2name gets the modification time of matching files
 and directories and adds a datestamp in standard ISO 8601+ format
@@ -163,14 +163,14 @@ you might like to read.
 
 In short:
 
-For *tagging*, please refer to [[https://github.com/novoid/filetag][filetag]] and its documentation.
+For *tagging*, please refer to [[https://github.com/novoid/filetags][filetags]] and its documentation.
 
 See [[https://github.com/novoid/date2name][date2name]] for easily adding ISO *time-stamps or date-stamps* to
 files.
 
 For *easily naming and tagging* files within file browsers that allow
 integration of external tools, see [[https://github.com/novoid/appendfilename][appendfilename]] (once more) and
-[[https://github.com/novoid/filetag][filetag]].
+[[https://github.com/novoid/filetags][filetags]].
 
 Moving to the archive folders is done using [[https://github.com/novoid/move2archive][move2archive]].
 
@@ -180,6 +180,12 @@ current season]].
 
 Files containing an ISO time/date-stamp gets indexed by the
 filename-module of [[https://github.com/novoid/Memacs][Memacs]].
+
+Here is [[https://glt18-programm.linuxtage.at/events/321.html][a 45 minute talk I gave]] at [[https://glt18.linuxtage.at/][Linuxtage Graz 2018]] presenting the
+idea of and workflows related to appendfilename and other handy tools
+for file management:
+
+[[https://media.ccc.de/v/GLT18_-_321_-_en_-_g_ap147_004_-_201804281550_-_the_advantages_of_file_name_conventions_and_tagging_-_karl_voit/][bin/2018-05-06 filetags demo slide for video preview with video button -- screenshots.png]]
 
 * How to Thank Me
 
