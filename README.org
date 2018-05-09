@@ -20,10 +20,10 @@ with the (older) DIN 5008 version with dots.
 : Usage:
 :          date2name [options] file ...
 
-Run "date2name --help" for usage hints
+Run "date2name --help" for usage hints such as:
 
 : Options:
-:   -h, --help         show this help message and exit
+:   -h, --help         show the extended help message and exit
 :   -d, --directories  modify only directory names
 :   -f, --files        modify only file names
 :   -C, --compact      use compact datestamp             (YYYYMMDD)
@@ -31,9 +31,10 @@ Run "date2name --help" for usage hints
 :   -w, --withtime     use datestamp including seconds   (YYYY-MM-DDThh.mm.ss)
 :   -m, --mtime        take modification time for datestamp [default]
 :   -c, --ctime        take creation time for datestamp
+:   --delimiter        overwrite default delimiter
+:   --nocorrections    do not convert existing datestamps to new format
 :   -q, --quiet        do not output anything but just errors on console
 :   -v, --verbose      enable verbose mode
-:   --nocorrections    do not convert existing datestamps to new format
 :   -s, --dryrun       enable dryrun mode: just simulate what would happen, do
 :                      not modify files or directories
 :   --version          display version and exit

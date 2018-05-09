@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2017-12-07 15:25:09 karl.voit>"
+PROG_VERSION = u"Time-stamp: <2018-05-09 13:46:59 karl.voit>"
 
 """
 date2name
@@ -44,6 +44,9 @@ Per default, %prog gets the modification time of matching files\n\
 and directories and adds a datestamp in standard ISO 8601+ format\n\
 YYYY-MM-DD (http://datestamps.org/index.shtml) at the beginning of\n\
 the file- or directoryname.\n\
+The delimiter between date/time-stamp and rest of the file name\n\
+is an underscore character. If there is a space character in the\n\
+file name, a space is used as delimiter instead.\n\
 If an existing timestamp is found, its style will be converted to the\n\
 selected ISO datestamp format but the numbers stays the same.\n\
 Executed with an examplefilename \"file\" this results e.g. in\n\
@@ -81,12 +84,18 @@ parser.add_option("-m", "--mtime", dest="mtime",
 parser.add_option("-c", "--ctime", dest="ctime",
                   action="store_true",
                   help="take creation time for datestamp")
+parser.add_option("--delimiter", dest="delimiter", metavar='DELIMITER_STRING',
+                  help='use this option to override the delimiter character between ' +
+                  'date/time-stamp and the rest. It may be a single character like "_" ' +
+                  'or some arbitrary string. Please note that anything else but minus, ' +
+                  'space, or underscore may result in not recognizing the delimiter ' +
+                  'for further operations such as fixing slightly wrong formatted time-stamps.')
+parser.add_option("--nocorrections", dest="nocorrections", action="store_true",
+                  help="do not convert existing but slightely wrong formatted date/time-stamps to new format")
 parser.add_option("-q", "--quiet", dest="quiet", action="store_true",
                   help="do not output anything but just errors on console")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
                   help="enable verbose mode")
-parser.add_option("--nocorrections", dest="nocorrections", action="store_true",
-                  help="do not convert existing datestamps to new format")
 parser.add_option("-s", "--dryrun", dest="dryrun", action="store_true",
                   help="enable dryrun mode: just simulate what would happen, do not modify files or directories")
 parser.add_option("--version", dest="version", action="store_true",
@@ -162,14 +171,17 @@ def get_timestamp_from_file(formatstring, item):
     """read out ctime or mtime of file and return new itemname"""
 
     if " " in item:
-        separator_char = " "
+        delimiter_char = " "
     else:
-        separator_char = "_"
+        delimiter_char = "_"
+
+    if options.delimiter:
+        delimiter_char = options.delimiter
 
     if options.ctime:
-        return time.strftime(formatstring, time.localtime(os.path.getctime(item))) + separator_char + item
+        return time.strftime(formatstring, time.localtime(os.path.getctime(item))) + delimiter_char + item
     elif options.mtime:
-        return time.strftime(formatstring, time.localtime(os.path.getmtime(item))) + separator_char + item
+        return time.strftime(formatstring, time.localtime(os.path.getmtime(item))) + delimiter_char + item
     else:
         logging.error("internal error: not ctime nor mtime chosen! You can correct this by giving a parameter")
 
