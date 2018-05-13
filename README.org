@@ -104,24 +104,17 @@ you will get three different filetag-windows to tag one file each.
 
 ** Integration into Windows Explorer for single and multiple selected files
 
-Create a batch file in your home directory. Adapt the paths to meet
-your setup. The content looks like:
+Integration of =date2name= to the "Send to" context menu has the
+advantage that you are able to modify /all/ selected files at once.
 
-: C:\Python36\python.exe C:\Users\USERNAME\src\date2name\date2name.py -i %*
+However, itegrating to the "Send to" context menu is not trivial.
+Therefore, I wrote [[https://github.com/novoid/integratethis][integratethis]], which automates these steps:
 
-If you want to confirm the process (and see error messages and so
-forth), you might want to append as well following line:
-
-: set /p DUMMY=Hit ENTER to continue ...
-
-My batch file is located in =C:\Users\USERNAME\bin\date2name.bat=. Now
-create a lnk file for it (e.g., via Ctrl-Shift-drag), rename the lnk
-file to =date2name.lnk= and move the lnk file to
-=~/AppData/Roaming/Microsoft/Windows/SendTo/=.
-
-This way, you get a nice entry in your context menu sub-menu "Send to"
-which is also correctly tagging selection of files as if you put the
-list of selected items to a single call of date2name.
+#+BEGIN_EXAMPLE
+pip3 install date2name integratethis
+integratethis date2name
+integratethis time2name
+#+END_EXAMPLE
 
 ** Integration into FreeCommander
 
