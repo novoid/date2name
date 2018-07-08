@@ -151,6 +151,11 @@ If you want to assign a different keyboard shortcut than =Ctrl-1= like
 
 * Related tools and workflows
 
+Alternative implementations of date2name:
+- https://github.com/DerBeutlin/date2name.el for Emacs/dired
+
+---------------
+
 This tool is part of a tool-set which I use to manage my digital files
 such as photographs. My work-flows are described in [[http://karl-voit.at/managing-digital-photographs/][this blog posting]]
 you might like to read.
