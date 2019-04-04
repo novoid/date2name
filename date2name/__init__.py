@@ -20,6 +20,7 @@ import  time
 import  logging
 import  sys
 from optparse import OptionParser
+import platform
 
 # global variables
 PROG_VERSION_DATE = PROG_VERSION[13:23]
@@ -178,7 +179,10 @@ def get_timestamp_from_file(formatstring, item):
     if options.delimiter:
         delimiter_char = options.delimiter
 
-    if options.ctime:
+    if options.ctime and platform.system() == 'Darwin':
+        # see https://github.com/novoid/date2name/issues/6 for macOS-issue with ctime
+        return time.strftime(formatstring, time.localtime(os.stat(item).st_birthtime)) + delimiter_char + item
+    elif options.ctime and platform.system() != 'Darwin':
         return time.strftime(formatstring, time.localtime(os.path.getctime(item))) + delimiter_char + item
     elif options.mtime:
         return time.strftime(formatstring, time.localtime(os.path.getmtime(item))) + delimiter_char + item
