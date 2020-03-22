@@ -51,37 +51,6 @@ Get it from [[https://github.com/novoid/date2name][GitHub]] or install it via «
 
 * Integration Into Common Tools
 
-** Integration into Thunar
-
-[[https://en.wikipedia.org/wiki/Thunar][Thunar]] is a popular GNU/Linux file browser for the xfce environment.
-
-Unfortunately, it is rather complicated to add custom commands to
-Thunar. I found [[https://askubuntu.com/questions/403922/keyboard-shortcut-for-thunar-custom-actions][a good description]] which you might want to follow.
-
-To my disappoinment, even this manual confguration is not stable
-somehow. From time to time, the IDs of ~$HOME/.config/Thunar/uca.xml~
-and ~$HOME/.config/Thunar/accels.scm~ differ.
-
-For people using Org-mode, I automated the updating process (not the
-initial adding process) to match IDs again:
-
-Script for checking "tag": do it ~tag-ID~ and path in ~accels.scm~ match?
-: #+BEGIN_SRC sh :var myname="tag"
-: ID=`egrep -A 2 "<name>$myname" $HOME/.config/Thunar/uca.xml | grep unique-id | sed 's#.*<unique-id>##' | sed 's#<.*$##'`
-: echo "$myname-ID of uca.xml: $ID"
-: echo "In accels.scm: "`grep -i "$ID" $HOME/.config/Thunar/accels.scm`
-: #+END_SRC
-
-If they don't match, following script re-writes ~accels.scm~ with the current ID:
-: #+BEGIN_SRC sh :var myname="tag" :var myshortcut="<Alt>t"
-: ID=`egrep -A 2 "<name>$myname" $HOME/.config/Thunar/uca.xml | grep unique-id | sed 's#.*<unique-id>##' | sed 's#<.*$##'`
-: echo "appending $myname-ID of uca.xml to accels.scm: $ID"
-: mv $HOME/.config/Thunar/accels.scm $HOME/.config/Thunar/accels.scm.OLD
-: grep -v "\"$myshortcut\"" $HOME/.config/Thunar/accels.scm.OLD > $HOME/.config/Thunar/accels.scm
-: rm $HOME/.config/Thunar/accels.scm.OLD
-: echo "(gtk_accel_path \"<Actions>/ThunarActions/uca-action-$ID\" \"$myshortcut\")" >> $HOME/.config/Thunar/accels.scm
-: #+END_SRC
-
 ** Integration into Windows File Explorer
 
 The easiest way to integrate =date2name= into File Explorer ("Send to"
@@ -136,6 +105,37 @@ pip3 install date2name integratethis
 integratethis date2name
 integratethis time2name
 #+END_EXAMPLE
+
+** Integration into Thunar
+
+[[https://en.wikipedia.org/wiki/Thunar][Thunar]] is a popular GNU/Linux file browser for the xfce environment.
+
+Unfortunately, it is rather complicated to add custom commands to
+Thunar. I found [[https://askubuntu.com/questions/403922/keyboard-shortcut-for-thunar-custom-actions][a good description]] which you might want to follow.
+
+To my disappoinment, even this manual confguration is not stable
+somehow. From time to time, the IDs of ~$HOME/.config/Thunar/uca.xml~
+and ~$HOME/.config/Thunar/accels.scm~ differ.
+
+For people using Org-mode, I automated the updating process (not the
+initial adding process) to match IDs again:
+
+Script for checking "tag": do it ~tag-ID~ and path in ~accels.scm~ match?
+: #+BEGIN_SRC sh :var myname="tag"
+: ID=`egrep -A 2 "<name>$myname" $HOME/.config/Thunar/uca.xml | grep unique-id | sed 's#.*<unique-id>##' | sed 's#<.*$##'`
+: echo "$myname-ID of uca.xml: $ID"
+: echo "In accels.scm: "`grep -i "$ID" $HOME/.config/Thunar/accels.scm`
+: #+END_SRC
+
+If they don't match, following script re-writes ~accels.scm~ with the current ID:
+: #+BEGIN_SRC sh :var myname="tag" :var myshortcut="<Alt>t"
+: ID=`egrep -A 2 "<name>$myname" $HOME/.config/Thunar/uca.xml | grep unique-id | sed 's#.*<unique-id>##' | sed 's#<.*$##'`
+: echo "appending $myname-ID of uca.xml to accels.scm: $ID"
+: mv $HOME/.config/Thunar/accels.scm $HOME/.config/Thunar/accels.scm.OLD
+: grep -v "\"$myshortcut\"" $HOME/.config/Thunar/accels.scm.OLD > $HOME/.config/Thunar/accels.scm
+: rm $HOME/.config/Thunar/accels.scm.OLD
+: echo "(gtk_accel_path \"<Actions>/ThunarActions/uca-action-$ID\" \"$myshortcut\")" >> $HOME/.config/Thunar/accels.scm
+: #+END_SRC
 
 ** Integration into FreeCommander
 
