@@ -90,22 +90,6 @@ As the heading and the link name suggests: [[https://stackoverflow.com/questions
 files]]. So if you select three files and invoke this context menu item,
 you will get three different filetag-windows to tag one file each.
 
-*** Manual Integration into Windows Explorer for single and multiple selected files
-
-Use this only if the [[https://github.com/novoid/integratethis][integratethis]] method can not be applied:
-
-Integration of =date2name= to the "Send to" context menu has the
-advantage that you are able to modify /all/ selected files at once.
-
-However, itegrating to the "Send to" context menu is not trivial.
-Therefore, I wrote [[https://github.com/novoid/integratethis][integratethis]], which automates these steps:
-
-#+BEGIN_EXAMPLE
-pip3 install date2name integratethis
-integratethis date2name
-integratethis time2name
-#+END_EXAMPLE
-
 ** Integration into Thunar
 
 [[https://en.wikipedia.org/wiki/Thunar][Thunar]] is a popular GNU/Linux file browser for the xfce environment.
