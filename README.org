@@ -3,7 +3,9 @@
 [[file:bin/screencast.gif]]
 
 #+BEGIN_HTML
+<a href="https://karl-voit.at/demo-date2name">
 <img src="https://raw.githubusercontent.com/novoid/screencasts/master/file_management/date2name.gif" />
+</a>
 #+END_HTML
 
 Per default, date2name gets the modification time of matching files
