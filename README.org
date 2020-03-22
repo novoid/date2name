@@ -82,7 +82,20 @@ If they don't match, following script re-writes ~accels.scm~ with the current ID
 : echo "(gtk_accel_path \"<Actions>/ThunarActions/uca-action-$ID\" \"$myshortcut\")" >> $HOME/.config/Thunar/accels.scm
 : #+END_SRC
 
-** Integration into Windows Explorer for single files
+** Integration into Windows File Explorer
+
+The easiest way to integrate =date2name= into File Explorer ("Send to"
+context menu) is by using [[https://github.com/novoid/integratethis][integratethis]].
+
+Execute this in your command line environment:
+
+: pip install date2name integratethis
+: integratethis date2name
+: integratethis time2name
+
+*** Manual Integration into Windows Explorer for single files
+
+Use this only if the [[https://github.com/novoid/integratethis][integratethis]] method can not be applied:
 
 Create a registry file =add_date2name_to_context_menu.reg= and edit it
 to meet the following template. Please make sure to replace the paths
@@ -108,7 +121,9 @@ As the heading and the link name suggests: [[https://stackoverflow.com/questions
 files]]. So if you select three files and invoke this context menu item,
 you will get three different filetag-windows to tag one file each.
 
-** Integration into Windows Explorer for single and multiple selected files
+*** Manual Integration into Windows Explorer for single and multiple selected files
+
+Use this only if the [[https://github.com/novoid/integratethis][integratethis]] method can not be applied:
 
 Integration of =date2name= to the "Send to" context menu has the
 advantage that you are able to modify /all/ selected files at once.
