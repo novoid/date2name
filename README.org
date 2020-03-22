@@ -2,7 +2,9 @@
 
 [[file:bin/screencast.gif]]
 
-https://raw.githubusercontent.com/novoid/screencasts/master/file_management/date2name.gif
+#+BEGIN_HTML
+<img src="https://raw.githubusercontent.com/novoid/screencasts/master/file_management/date2name.gif" />
+#+END_HTML
 
 Per default, date2name gets the modification time of matching files
 and directories and adds a datestamp in standard ISO 8601+ format
