@@ -2,6 +2,8 @@
 
 [[file:bin/screencast.gif]]
 
+https://raw.githubusercontent.com/novoid/screencasts/master/file_management/date2name.gif
+
 Per default, date2name gets the modification time of matching files
 and directories and adds a datestamp in standard ISO 8601+ format
 YYYY-MM-DD (http://datestamps.org/index.shtml) at the beginning of
