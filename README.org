@@ -47,7 +47,12 @@ Run "date2name --help" for usage hints such as:
 
 * Installation
 
-Get it from [[https://github.com/novoid/date2name][GitHub]] or install it via «pip install date2name».
+First, you need the programming platform [[https://www.python.org/downloads/][Python]] installed.
+
+Then, you can
+
+1. get =date2name= manually from [[https://github.com/novoid/date2name][GitHub]] OR
+2. install it via =pip install date2name= which is simplest method.
 
 * Integration Into Common Tools
 
@@ -158,12 +163,13 @@ If you want to assign a different keyboard shortcut than =Ctrl-1= like
 
 Alternative implementations of date2name:
 - https://github.com/DerBeutlin/date2name.el for Emacs/dired
+- https://github.com/muehlburger/d2n in Go
 
 ---------------
 
 This tool is part of a tool-set which I use to manage my digital files
 such as photographs. My work-flows are described in [[http://karl-voit.at/managing-digital-photographs/][this blog posting]]
-you might like to read. 
+you might like to read.
 
 In short:
 
