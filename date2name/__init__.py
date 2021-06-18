@@ -24,11 +24,13 @@ import platform
 
 # global variables
 PROG_VERSION_DATE = PROG_VERSION[13:23]
+FORMATSTRIING_SHORT   = "%y%m%d"
 FORMATSTRING_COMPACT  = "%Y%m%d"
 FORMATSTRING_STANDARD = "%Y-%m-%d"
 FORMATSTRING_MONTH    = "%Y-%m"
 FORMATSTRING_WITHTIME = "%Y-%m-%dT%H.%M.%S"
 NODATESTAMP_PATTERN = re.compile('^\D')
+SHORT_PATTERN       = re.compile('^\d{2,2}[01]\d[0123]\d[- _]')
 COMPACT_PATTERN     = re.compile('^\d{4,4}[01]\d[0123]\d[- _]')
 STANDARD_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[- _]')
 MONTH_PATTERN       = re.compile('^\d{4,4}-[01]\d[- _]')
@@ -67,6 +69,9 @@ parser.add_option("-d", "--directories", dest="onlydirectories",
 parser.add_option("-f", "--files", dest="onlyfiles",
                   action="store_true",
                   help="modify only file names")
+parser.add_option("-S", "--short", dest="short",
+                  action="store_true",
+                  help="use short datestamp               (YYMMDD)")
 parser.add_option("-C", "--compact", dest="compact",
                   action="store_true",
                   help="use compact datestamp             (YYYYMMDD)")
@@ -241,6 +246,14 @@ def generate_new_basename(formatstring, basename):
         else:
             new_basename = get_converted_basename("compact", basename)
 
+    elif SHORT_PATTERN.match(basename):
+        logging.debug("basename \"%s\" matches short-pattern" % basename)
+        if options.compact:
+            logging.debug("old pattern is the same as the recognised, basename stays the same")
+            return basename
+        else:
+            new_basename = get_converted_basename("compact", basename)
+
     elif MONTH_PATTERN.match(basename):
         logging.debug("basename \"%s\" matches month-pattern" % basename)
         if options.month:
@@ -343,6 +356,8 @@ def main():
 
     if options.compact:
         formatstring = FORMATSTRING_COMPACT
+    elif options.short:
+        formatstring = FORMATSTRIING_SHORT
     elif options.month:
         formatstring = FORMATSTRING_MONTH
     elif options.withtime:
