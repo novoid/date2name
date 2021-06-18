@@ -29,14 +29,16 @@ FORMATSTRING_COMPACT  = "%Y%m%d"
 FORMATSTRING_STANDARD = "%Y-%m-%d"
 FORMATSTRING_MONTH    = "%Y-%m"
 FORMATSTRING_WITHTIME = "%Y-%m-%dT%H.%M.%S"
-NODATESTAMP_PATTERN = re.compile('^\D')
-SHORT_PATTERN       = re.compile('^\d{2,2}[01]\d[0123]\d[- _]')
-COMPACT_PATTERN     = re.compile('^\d{4,4}[01]\d[0123]\d[- _]')
-STANDARD_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[- _]')
-MONTH_PATTERN       = re.compile('^\d{4,4}-[01]\d[- _]')
-WITHTIME_AND_SECONDS_PATTERN  = re.compile('^\d{4,4}-[01]\d-[0123]\d([T :_-])([012]\d)([:.-])([012345]\d)([:.-])([012345]\d)[- _.]')
-WITHTIME_NO_SECONDS_PATTERN   = re.compile('^\d{4,4}-[01]\d-[0123]\d([T :_-])([012]\d)([:.-])([012345]\d)[- _.]')
-WITHSECONDS_PATTERN    = re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d[:.-][012345]\d[:.-][012345]\d[- _]')
+REGEX_PATTERNS = {
+    'NODATESTAMP': re.compile('^\D'),
+    'SHORT': re.compile('^\d{2,2}[01]\d[0123]\d[- _]'),
+    'COMPACT': re.compile('^\d{4,4}[01]\d[0123]\d[- _]'),
+    'STANDARD': re.compile('^\d{4,4}-[01]\d-[0123]\d[- _]'),
+    'MONTH': re.compile('^\d{4,4}-[01]\d[- _]'),
+    'WITHTIME_AND_SECONDS': re.compile('^\d{4,4}-[01]\d-[0123]\d([T :_-])([012]\d)([:.-])([012345]\d)([:.-])([012345]\d)[- _.]'),
+    'WITHTIME_NO_SECONDS':  re.compile('^\d{4,4}-[01]\d-[0123]\d([T :_-])([012]\d)([:.-])([012345]\d)[- _.]'),
+    'WITHSECONDS': re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d[:.-][012345]\d[:.-][012345]\d[- _]'),
+}
 MAX_PATHLENGTH = 255  # os.pathconf('/', 'PC_PATH_MAX') may be longer but os.rename() seems to have hard-coded 256
 
 # cmdline parsing
@@ -81,9 +83,9 @@ parser.add_option("-M", "--month", dest="month",
 parser.add_option("-w", "--withtime", dest="withtime",
                   action="store_true",
                   help="use datestamp including seconds   (YYYY-MM-DDThh.mm.ss)")
-# parser.add_option("-r", "--remove", dest="remove",
-#                   action="store_true",
-#                   help="remove all known datestamps")
+parser.add_option("-r", "--remove", dest="remove",
+                  action="store_true",
+                  help="remove all known datestamps")
 parser.add_option("-m", "--mtime", dest="mtime",
                   action="store_true",
                   help="take modification time for datestamp [default]")
@@ -151,7 +153,7 @@ def get_converted_basename(matched_pattern, item):
         item_month = item[5:7]
         item_day = item[8:10]
         logging.warn("%s ... time will be lost due to conversion" % item)
-        if WITHSECONDS_PATTERN.match(item):
+        if REGEX_PATTERNS['WITHSECONDS'].match(item):
             name_without_datestamp = item[19:]
         else:
             # time-stamp only with hours and minutes:
@@ -198,10 +200,10 @@ def get_timestamp_from_file(formatstring, item):
 def generate_new_basename(formatstring, basename):
     """generates the new itemname; considering options.nocorrections"""
 
-    withtime_and_seconds_components = WITHTIME_AND_SECONDS_PATTERN.match(basename)
-    withtime_no_seconds_components = WITHTIME_NO_SECONDS_PATTERN.match(basename)
+    withtime_and_seconds_components = REGEX_PATTERNS['WITHTIME_AND_SECONDS'].match(basename)
+    withtime_no_seconds_components = REGEX_PATTERNS['WITHTIME_NO_SECONDS'].match(basename)
 
-    if options.nocorrections or NODATESTAMP_PATTERN.match(basename):
+    if options.nocorrections or REGEX_PATTERNS['NODATESTAMP'].match(basename):
         logging.debug("basename \"" + basename + "\" matches nodatestamp-pattern or option nocorrections " +
                       "is set: skipping further pattern matching")
         new_basename = get_timestamp_from_file(formatstring, basename)
@@ -230,7 +232,7 @@ def generate_new_basename(formatstring, basename):
         else:
             new_basename = get_converted_basename("withtime", basename)
 
-    elif STANDARD_PATTERN.match(basename):
+    elif REGEX_PATTERNS['STANDARD'].match(basename):
         logging.debug("basename \"%s\" matches standard-pattern" % basename)
         if not options.withtime and not options.compact and not options.month:
             logging.debug("old pattern is the same as the recognised, basename stays the same")
@@ -238,7 +240,7 @@ def generate_new_basename(formatstring, basename):
         else:
             new_basename = get_converted_basename("standard", basename)
 
-    elif COMPACT_PATTERN.match(basename):
+    elif REGEX_PATTERNS['COMPACT'].match(basename):
         logging.debug("basename \"%s\" matches compact-pattern" % basename)
         if options.compact:
             logging.debug("old pattern is the same as the recognised, basename stays the same")
@@ -246,7 +248,7 @@ def generate_new_basename(formatstring, basename):
         else:
             new_basename = get_converted_basename("compact", basename)
 
-    elif SHORT_PATTERN.match(basename):
+    elif REGEX_PATTERNS['SHORT'].match(basename):
         logging.debug("basename \"%s\" matches short-pattern" % basename)
         if options.compact:
             logging.debug("old pattern is the same as the recognised, basename stays the same")
@@ -254,7 +256,7 @@ def generate_new_basename(formatstring, basename):
         else:
             new_basename = get_converted_basename("compact", basename)
 
-    elif MONTH_PATTERN.match(basename):
+    elif REGEX_PATTERNS['MONTH'].match(basename):
         logging.debug("basename \"%s\" matches month-pattern" % basename)
         if options.month:
             logging.debug("old pattern is the same as the recognised, basename stays the same")
@@ -275,15 +277,24 @@ def get_full_name(path, filename):
     return path + "/" + filename
 
 
+def remove_timestamp_from_basename(basename, list_of_regular_expressions=None):
+    """Identify timestamp by a given list of regular expressions. Then remove the timestamp from basename."""
+    if not list_of_regular_expressions or not isinstance(list_of_regular_expressions, list):
+        list_of_regular_expressions = [REGEX_PATTERNS[_] for _ in REGEX_PATTERNS]
+
+    for regular_expression in list_of_regular_expressions:
+        if regular_expression.match(basename):
+            basename = regular_expression.sub(repl='', string=basename, count=1).strip()
+
+    return basename
+
+
 def handle_item(path, basename, formatstring):
     """Handle timestamp adding or removing with directories or files"""
 
-    options.remove = False
-
     if options.remove:
         logging.debug("removing timestamp from base \"%s\"" % basename)
-        # FIXXME: implement datestamp removing
-        logging.error("Sorry! Removing of datestamps is not yet implemented")
+        new_basename = remove_timestamp_from_basename(basename)
     else:
         logging.debug("••••••••••••••••········· adding timestamp to base \"%s\"" % basename)
 
@@ -297,28 +308,28 @@ def handle_item(path, basename, formatstring):
 
         new_basename = generate_new_basename(formatstring, basename)
 
-        logging.debug("new itemname for \"%s\" will be \"%s\"" % (basename, new_basename))
+    logging.debug("new itemname for \"%s\" will be \"%s\"" % (basename, new_basename))
 
-        if options.dryrun:
-            if basename == new_basename:
-                logging.info("%s … no modification" % basename)
-            else:
-                logging.info("%-40s  →  %s" % (get_full_name(path, basename), new_basename))
+    if options.dryrun:
+        if basename == new_basename:
+            logging.info("%s … no modification" % basename)
         else:
-            if basename == new_basename:
-                logging.info("\"%s\" … no modification" % get_full_name(path, basename))
+            logging.info("%-40s  →  %s" % (get_full_name(path, basename), new_basename))
+    else:
+        if basename == new_basename:
+            logging.info("\"%s\" … no modification" % get_full_name(path, basename))
+        else:
+            logging.debug("\"%s\" → \"%s\"" % (get_full_name(path, basename), new_basename))
+            logging.info("%-40s  →  %s" % (get_full_name(path, basename), new_basename))
+            if len(new_basename) > MAX_PATHLENGTH:
+                logging.error("ERROR: the current file needs to be renamed with a file name length of " +
+                              "%i which is greater than %i. " % (len(new_basename), MAX_PATHLENGTH) +
+                              "This usually causes \"[Errno 36] File name too long\" and therefore " +
+                              "I ignore this file for now. Please shorten file name for at " +
+                              "least %i characters and try again." % (len(new_basename)-MAX_PATHLENGTH))
+                sys.exit(1)
             else:
-                logging.debug("\"%s\" → \"%s\"" % (get_full_name(path, basename), new_basename))
-                logging.info("%-40s  →  %s" % (get_full_name(path, basename), new_basename))
-                if len(new_basename) > MAX_PATHLENGTH:
-                    logging.error("ERROR: the current file needs to be renamed with a file name length of " +
-                                  "%i which is greater than %i. " % (len(new_basename), MAX_PATHLENGTH) +
-                                  "This usually causes \"[Errno 36] File name too long\" and therefore " +
-                                  "I ignore this file for now. Please shorten file name for at " +
-                                  "least %i characters and try again." % (len(new_basename)-MAX_PATHLENGTH))
-                    sys.exit(1)
-                else:
-                    os.rename(basename, new_basename)
+                os.rename(basename, new_basename)
 
 
 def main():
