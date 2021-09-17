@@ -1,6 +1,6 @@
 #+NAME:    test_generator.org
 #+AUTHOR:  nbehrnd@yahoo.com
-#+DATE:    2021-09-02 (YYYY-MM-DD)
+#+DATE:    2021-09-17 (YYYY-MM-DD)
 # License: GPL3, 2021.
 
 #+PROPERTY: header-args :tangle yes
@@ -8,7 +8,7 @@
 
 * Intent
 
-  The application =date2name= by Karl Voit /et al./ ([[https://github.com/novoid/date2name][source)]] prepepends date
+  The application =date2name= by Karl Voit /et al./ ([[https://github.com/novoid/date2name][source)]] prepends date
   stamps to files and folders (YYYY-MM-DD, YYYYMMDD, YYYY-MM, and
   YYYY-MM-DDThh.mm.ss).  This Emacs .org file is used to prepare the automatic
   testing of the file processing by [[https://docs.pytest.org/en/latest/][pytest]].
@@ -19,7 +19,7 @@
   library, but may be obtained easily e.g., from [[https://pypi.org/project/pytest/][PyPi]].
 
   It is advantageous to retain the options to run =pytest= in a =Makefile=,
-  which equally is inlcuded in this development e.g. to retain if an
+  which equally is included in this development e.g. to retain if an
   instruction like =pytest -xv= or =pytest-3 -xv= is necessary (/vide infra/).
 
 * Dependencies
@@ -60,7 +60,7 @@
       # GNU Make file for the automation of pytest for date2name.
       #
       # While the test script is written for Python 3.9.2, you might need to
-      # adjust the following instruction once in case your OS includes pyest
+      # adjust the following instruction once in case your OS includes pytest
       # for legacy Python 2 side by side to Python 3, or only hosts pytest
       # for Python 3.  The tests in script test_date2name.py are set up to
       # work with pytest for Python 3; dependent on your installation, which
@@ -90,7 +90,7 @@
       # author:  nbehrnd@yahoo.com
       # license: GPL v3, 2021.
       # date:    2021-08-30 (YYYY-MM-DD)
-      # edit:    2021-09-02 (YYYY-MM-DD)
+      # edit:    2021-09-17 (YYYY-MM-DD)
       #
       """Test pad for functions by date2name with pytest.
       
@@ -162,7 +162,7 @@
           os.remove(TFILE)
 
 
-      def test_script_existance():
+      def test_script_existence():
           """Merely check for the script's presence."""
           assert os.path.isfile(PROGRAM)
 
@@ -178,15 +178,15 @@
 
 *** perform the tests on files [4/4]
 
-    These are tests for prepending the time stamp to a file name without
-    explicit call to query for the time of modification.
+    These tests check the addition of a time stamp ahead of the file name.
+
     + [X] default pattern, i.e. prepend YYYY-MM-DD_ to file test.txt
       #+begin_src python :tangle test_date2name.py
         @pytest.mark.parametrize("arg1", [" ", "-f", "--files",
                                           "-m", "--mtime",
                                           "-c", "--ctime"])
         def test_default_pattern_YYYY_MM_DD(arg1):
-            """Prepend YYYY-MM-DD to the file."""
+            """Prepend 'YYYY-MM-DD_' to the file name."""
             prepare_testfile()
             day = str("")
             new = str("")
@@ -215,7 +215,7 @@
                                           "-C -c", "--compact -c",
                                           "-C --ctime", "--compact --ctime"])
         def test_compact_pattern_YYYYMMDD(arg1):
-            """Prepend YYYYMMDD to the file."""
+            """Prepend 'YYYYMMDD_' to the file name."""
             prepare_testfile()
             day = str("")
             new = str("")
@@ -251,8 +251,8 @@
                                           "-M --mtime", "--month --mtime",
                                           "-M -c", "--month -c",
                                           "-M --ctime", "--month --ctime"])
-        def test_compact_monthn_YYYY_MM(arg1):
-            """Prepend YYYY-MM to the file."""
+        def test_compact_month_YYYY_MM(arg1):
+            """Prepend 'YYYY-MM_' to the file name."""
             prepare_testfile()
             day = str("")
             new = str("")
@@ -287,7 +287,7 @@
                                           "-w -c", "-w --ctime",
                                           "--withtime -c", "--withtime --ctime"])
         def test_default_pattern_YYYY_MM_DDThh_mm_ss(arg1):
-            """Prepend YYYY-MM-DDThh.mm.ss to the file."""
+            """Prepend 'YYYY-MM-DDThh.mm.ss_' to the file name."""
             prepare_testfile()
             day = str("")
             new = str("")
@@ -305,7 +305,7 @@
                 second = query_file_creation().split()[1]
 
             second = second.split(".")[0]  # use integer seconds only
-            second = second.replace(":", ".")  # adjust represetation
+            second = second.replace(":", ".")  # adjust representation
 
             new = "".join([day, "T", second, "_", TFILE])
 

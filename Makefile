@@ -1,7 +1,7 @@
 # GNU Make file for the automation of pytest for date2name.
 #
 # While the test script is written for Python 3.9.2, you might need to
-# adjust the following instruction once in case your OS includes pyest
+# adjust the following instruction once in case your OS includes pytest
 # for legacy Python 2 side by side to Python 3, or only hosts pytest
 # for Python 3.  The tests in script test_date2name.py are set up to
 # work with pytest for Python 3; dependent on your installation, which
