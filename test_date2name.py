@@ -118,7 +118,7 @@ def test_compact_pattern_YYYYMMDD(arg1):
                   "-C --ctime", "--compact --ctime"]:
         day = query_file_creation().split()[0]
 
-    # drop the hyphens in the date stamp:
+    # drop the hyphens in the datestamp:
     day = day.replace("-", "")
 
     new = "_".join([day, TFILE])
@@ -150,7 +150,7 @@ def test_compact_month_YYYY_MM(arg1):
                   "-M --ctime", "--month --ctime"]:
         day = query_file_creation().split()[0]
 
-    # trim off the last three characters in the date stamp:
+    # trim off the last three characters in the datestamp:
     day = day[:-3]
 
     new = "_".join([day, TFILE])
@@ -187,6 +187,40 @@ def test_default_pattern_YYYY_MM_DDThh_mm_ss(arg1):
 
     new = "".join([day, "T", second, "_", TFILE])
 
+    test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
+    assert os.path.isfile(new)
+    os.remove(new)
+
+@pytest.mark.parametrize("arg1", ["-S", "--short",
+                                  "-S -f", "--short -f",
+                                  "-S --files", "--short --files",
+                                  "-S -m", "--short -m",
+                                  "-S --mtime", "--short --mtime",
+                                  "-S -c", "--short -c",
+                                  "-S --ctime", "--short --ctime"])
+def test_short_pattern_YYMMDD(arg1):
+    """Prepend 'YYMMDD_' to the file name."""
+    prepare_testfile()
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-S", "--short",
+                "-S -f", "--short -f",
+                "-S --files", "--short --files",
+                "-S -m", "--short -m",
+                "-S --mtime", "--short --mtime"]:
+        day = query_file_modification().split()[0]
+
+    elif arg1 in ["-S -c", "--short -c",
+                  "-S --ctime", "--short --ctime"]:
+        day = query_file_creation().split()[0]
+
+    # drop the hyphens in the datestamp:
+    day = day.replace("-", "")
+    # drop the first two characters about the year (e.g., 1789 -> 89)
+    day = day[2:]
+
+    new = "_".join([day, TFILE])
     test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
     assert os.path.isfile(new)
     os.remove(new)

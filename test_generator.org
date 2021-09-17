@@ -8,10 +8,10 @@
 
 * Intent
 
-  The application =date2name= by Karl Voit /et al./ ([[https://github.com/novoid/date2name][source)]] prepends date
-  stamps to files and folders (YYYY-MM-DD, YYYYMMDD, YYYY-MM, and
-  YYYY-MM-DDThh.mm.ss).  This Emacs .org file is used to prepare the automatic
-  testing of the file processing by [[https://docs.pytest.org/en/latest/][pytest]].
+  The application =date2name= by Karl Voit /et al./ ([[https://github.com/novoid/date2name][source)]] prepends datestamps
+  to files and folders (YYYY-MM-DD, YYYYMMDD, YYYY-MM, and YYYY-MM-DDThh.mm.ss).
+  This Emacs .org file is used to prepare the automatic testing of the file
+  processing by [[https://docs.pytest.org/en/latest/][pytest]].
 
   By the command =C-c C-v t=, this =.org= file may (re)generate the tangled test
   script, file =test_date2name.py= as well as a dedicated =Makefile= to ease the
@@ -176,7 +176,7 @@
     #+end_src
 
 
-*** perform the tests on files [4/4]
+*** perform the tests on files [5/5]
 
     These tests check the addition of a time stamp ahead of the file name.
 
@@ -231,7 +231,7 @@
                           "-C --ctime", "--compact --ctime"]:
                 day = query_file_creation().split()[0]
 
-            # drop the hyphens in the date stamp:
+            # drop the hyphens in the datestamp:
             day = day.replace("-", "")
 
             new = "_".join([day, TFILE])
@@ -268,7 +268,7 @@
                           "-M --ctime", "--month --ctime"]:
                 day = query_file_creation().split()[0]
 
-            # trim off the last three characters in the date stamp:
+            # trim off the last three characters in the datestamp:
             day = day[:-3]
 
             new = "_".join([day, TFILE])
@@ -314,3 +314,41 @@
             os.remove(new)
       #+end_src
 
+    + [X] Preprend the short datestamp (YYMMDD, feature by Reiner Rottmann)
+      Related to the basic pattern, except truncating of the first two
+      characters.
+      #+begin_src python :tangle test_date2name.py
+        @pytest.mark.parametrize("arg1", ["-S", "--short",
+                                          "-S -f", "--short -f",
+                                          "-S --files", "--short --files",
+                                          "-S -m", "--short -m",
+                                          "-S --mtime", "--short --mtime",
+                                          "-S -c", "--short -c",
+                                          "-S --ctime", "--short --ctime"])
+        def test_short_pattern_YYMMDD(arg1):
+            """Prepend 'YYMMDD_' to the file name."""
+            prepare_testfile()
+            day = str("")
+            new = str("")
+        
+            if arg1 in ["-S", "--short",
+                        "-S -f", "--short -f",
+                        "-S --files", "--short --files",
+                        "-S -m", "--short -m",
+                        "-S --mtime", "--short --mtime"]:
+                day = query_file_modification().split()[0]
+        
+            elif arg1 in ["-S -c", "--short -c",
+                          "-S --ctime", "--short --ctime"]:
+                day = query_file_creation().split()[0]
+        
+            # drop the hyphens in the datestamp:
+            day = day.replace("-", "")
+            # drop the first two characters about the year (e.g., 1789 -> 89)
+            day = day[2:]
+        
+            new = "_".join([day, TFILE])
+            test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
+            assert os.path.isfile(new)
+            os.remove(new)
+      #+end_src
