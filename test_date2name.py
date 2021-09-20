@@ -4,7 +4,7 @@
 # author:  nbehrnd@yahoo.com
 # license: GPL v3, 2021.
 # date:    2021-08-30 (YYYY-MM-DD)
-# edit:    2021-09-02 (YYYY-MM-DD)
+# edit:    2021-09-17 (YYYY-MM-DD)
 #
 """Test pad for functions by date2name with pytest.
 
@@ -62,7 +62,7 @@ def test_create_remove_testfile():
     os.remove(TFILE)
 
 
-def test_script_existance():
+def test_script_existence():
     """Merely check for the script's presence."""
     assert os.path.isfile(PROGRAM)
 
@@ -78,7 +78,7 @@ def test_script_version():
                                   "-m", "--mtime",
                                   "-c", "--ctime"])
 def test_default_pattern_YYYY_MM_DD(arg1):
-    """Prepend YYYY-MM-DD to the file."""
+    """Prepend 'YYYY-MM-DD_' to the file name."""
     prepare_testfile()
     day = str("")
     new = str("")
@@ -102,7 +102,7 @@ def test_default_pattern_YYYY_MM_DD(arg1):
                                   "-C -c", "--compact -c",
                                   "-C --ctime", "--compact --ctime"])
 def test_compact_pattern_YYYYMMDD(arg1):
-    """Prepend YYYYMMDD to the file."""
+    """Prepend 'YYYYMMDD_' to the file name."""
     prepare_testfile()
     day = str("")
     new = str("")
@@ -118,7 +118,7 @@ def test_compact_pattern_YYYYMMDD(arg1):
                   "-C --ctime", "--compact --ctime"]:
         day = query_file_creation().split()[0]
 
-    # drop the hyphens in the date stamp:
+    # drop the hyphens in the datestamp:
     day = day.replace("-", "")
 
     new = "_".join([day, TFILE])
@@ -133,8 +133,8 @@ def test_compact_pattern_YYYYMMDD(arg1):
                                   "-M --mtime", "--month --mtime",
                                   "-M -c", "--month -c",
                                   "-M --ctime", "--month --ctime"])
-def test_compact_monthn_YYYY_MM(arg1):
-    """Prepend YYYY-MM to the file."""
+def test_compact_month_YYYY_MM(arg1):
+    """Prepend 'YYYY-MM_' to the file name."""
     prepare_testfile()
     day = str("")
     new = str("")
@@ -150,7 +150,7 @@ def test_compact_monthn_YYYY_MM(arg1):
                   "-M --ctime", "--month --ctime"]:
         day = query_file_creation().split()[0]
 
-    # trim off the last three characters in the date stamp:
+    # trim off the last three characters in the datestamp:
     day = day[:-3]
 
     new = "_".join([day, TFILE])
@@ -165,7 +165,7 @@ def test_compact_monthn_YYYY_MM(arg1):
                                   "-w -c", "-w --ctime",
                                   "--withtime -c", "--withtime --ctime"])
 def test_default_pattern_YYYY_MM_DDThh_mm_ss(arg1):
-    """Prepend YYYY-MM-DDThh.mm.ss to the file."""
+    """Prepend 'YYYY-MM-DDThh.mm.ss_' to the file name."""
     prepare_testfile()
     day = str("")
     new = str("")
@@ -183,10 +183,44 @@ def test_default_pattern_YYYY_MM_DDThh_mm_ss(arg1):
         second = query_file_creation().split()[1]
 
     second = second.split(".")[0]  # use integer seconds only
-    second = second.replace(":", ".")  # adjust represetation
+    second = second.replace(":", ".")  # adjust representation
 
     new = "".join([day, "T", second, "_", TFILE])
 
+    test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
+    assert os.path.isfile(new)
+    os.remove(new)
+
+@pytest.mark.parametrize("arg1", ["-S", "--short",
+                                  "-S -f", "--short -f",
+                                  "-S --files", "--short --files",
+                                  "-S -m", "--short -m",
+                                  "-S --mtime", "--short --mtime",
+                                  "-S -c", "--short -c",
+                                  "-S --ctime", "--short --ctime"])
+def test_short_pattern_YYMMDD(arg1):
+    """Prepend 'YYMMDD_' to the file name."""
+    prepare_testfile()
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-S", "--short",
+                "-S -f", "--short -f",
+                "-S --files", "--short --files",
+                "-S -m", "--short -m",
+                "-S --mtime", "--short --mtime"]:
+        day = query_file_modification().split()[0]
+
+    elif arg1 in ["-S -c", "--short -c",
+                  "-S --ctime", "--short --ctime"]:
+        day = query_file_creation().split()[0]
+
+    # drop the hyphens in the datestamp:
+    day = day.replace("-", "")
+    # drop the first two characters about the year (e.g., 1789 -> 89)
+    day = day[2:]
+
+    new = "_".join([day, TFILE])
     test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
     assert os.path.isfile(new)
     os.remove(new)
