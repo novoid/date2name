@@ -1,6 +1,6 @@
 #+NAME:    test_generator.org
 #+AUTHOR:  nbehrnd@yahoo.com
-#+DATE:    2021-09-17 (YYYY-MM-DD)
+#+DATE:    2021-09-22 (YYYY-MM-DD)
 # License: GPL3, 2021.
 
 #+PROPERTY: header-args :tangle yes
@@ -176,7 +176,7 @@
     #+end_src
 
 
-*** perform the tests on files [5/5]
+*** perform the tests on files [5/6]
 
     These tests check the addition of a time stamp ahead of the file name.
 
@@ -351,4 +351,45 @@
             test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
             assert os.path.isfile(new)
             os.remove(new)
+      #+end_src
+
+    + [ ] Check the retraction of the date/time stamp
+
+      The test is constrained to the five fix formats prepending the file name.
+
+      /Not ready for inclusion into the main branch/ To trace the advancement of
+      pytest's processing, long delays are set.  A manual check of date2time on
+      the CLI confirms that date2name writes the --withtime format, but is not
+      successful to retract this stamp.
+      
+      #+begin_src python :tangle test_date2name.py
+        import time, os, sys
+        @pytest.mark.parametrize("arg1", ["default", "short", "compact", "month", "withtime"])
+        @pytest.mark.parametrize("arg2", ["-r", "--remove"])
+        def test_remove_stamp(arg1, arg2):
+            """Check the retraction of the leading time stamp."""
+            substitution = {"default" : "2021-09-21",
+                            "short"   : "210921",
+                            "compact" : "20210921",
+                            "month"   : "2021-09",
+                            "withtime": "2021-09-21T13.59.59"}
+            prepend = substitution.get(arg1)
+        
+            BASIS = "test.txt"
+            TFILE = ""
+            TFILE = "_".join([prepend, BASIS])
+            with open(TFILE, mode = "w") as newfile:
+                newfile.write("This is a test file.")
+                time.sleep(2)
+        
+            test = getoutput(f"python3 {PROGRAM} {TFILE} {arg2}")
+            time.sleep(2)
+            assert os.path.isfile(TFILE) is False  # absence of stamped file
+            assert os.path.isfile(BASIS)           # presence unstamped file
+        
+            try:
+                os.remove("test.txt")
+            except OSError:
+                print("Running remove test, file 'test.txt' was not erased.")
+                sys.exit()
       #+end_src

@@ -224,3 +224,33 @@ def test_short_pattern_YYMMDD(arg1):
     test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
     assert os.path.isfile(new)
     os.remove(new)
+
+import time, os, sys
+@pytest.mark.parametrize("arg1", ["default", "short", "compact", "month", "withtime"])
+@pytest.mark.parametrize("arg2", ["-r", "--remove"])
+def test_remove_stamp(arg1, arg2):
+    """Check the retraction of the leading time stamp."""
+    substitution = {"default" : "2021-09-21",
+                    "short"   : "210921",
+                    "compact" : "20210921",
+                    "month"   : "2021-09",
+                    "withtime": "2021-09-21T13.59.59"}
+    prepend = substitution.get(arg1)
+
+    BASIS = "test.txt"
+    TFILE = ""
+    TFILE = "_".join([prepend, BASIS])
+    with open(TFILE, mode = "w") as newfile:
+        newfile.write("This is a test file.")
+        time.sleep(2)
+
+    test = getoutput(f"python3 {PROGRAM} {TFILE} {arg2}")
+    time.sleep(2)
+    assert os.path.isfile(TFILE) is False  # absence of stamped file
+    assert os.path.isfile(BASIS)           # presence unstamped file
+
+    try:
+        os.remove("test.txt")
+    except OSError:
+        print("Running remove test, file 'test.txt' was not erased.")
+        sys.exit()
