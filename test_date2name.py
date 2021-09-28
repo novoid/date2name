@@ -77,7 +77,7 @@ def test_script_version():
 @pytest.mark.parametrize("arg1", [" ", "-f", "--files",
                                   "-m", "--mtime",
                                   "-c", "--ctime"])
-def test_default_pattern_YYYY_MM_DD(arg1):
+def test_file_pattern_default(arg1):
     """Prepend 'YYYY-MM-DD_' to the file name."""
     prepare_testfile()
     day = str("")
@@ -101,7 +101,7 @@ def test_default_pattern_YYYY_MM_DD(arg1):
                                   "-C --mtime", "--compact --mtime",
                                   "-C -c", "--compact -c",
                                   "-C --ctime", "--compact --ctime"])
-def test_compact_pattern_YYYYMMDD(arg1):
+def test_file_pattern_compact(arg1):
     """Prepend 'YYYYMMDD_' to the file name."""
     prepare_testfile()
     day = str("")
@@ -133,7 +133,7 @@ def test_compact_pattern_YYYYMMDD(arg1):
                                   "-M --mtime", "--month --mtime",
                                   "-M -c", "--month -c",
                                   "-M --ctime", "--month --ctime"])
-def test_compact_month_YYYY_MM(arg1):
+def test_file_pattern_month(arg1):
     """Prepend 'YYYY-MM_' to the file name."""
     prepare_testfile()
     day = str("")
@@ -164,7 +164,7 @@ def test_compact_month_YYYY_MM(arg1):
                                   "--withtime -m", "--withtime --mtime",
                                   "-w -c", "-w --ctime",
                                   "--withtime -c", "--withtime --ctime"])
-def test_default_pattern_YYYY_MM_DDThh_mm_ss(arg1):
+def test_file_pattern_withtime(arg1):
     """Prepend 'YYYY-MM-DDThh.mm.ss_' to the file name."""
     prepare_testfile()
     day = str("")
@@ -198,7 +198,7 @@ def test_default_pattern_YYYY_MM_DDThh_mm_ss(arg1):
                                   "-S --mtime", "--short --mtime",
                                   "-S -c", "--short -c",
                                   "-S --ctime", "--short --ctime"])
-def test_short_pattern_YYMMDD(arg1):
+def test_file_pattern_short(arg1):
     """Prepend 'YYMMDD_' to the file name."""
     prepare_testfile()
     day = str("")
@@ -228,7 +228,7 @@ def test_short_pattern_YYMMDD(arg1):
 @pytest.mark.parametrize("arg1", ["default", "short", "compact",
                                   "month", "withtime"])
 @pytest.mark.parametrize("arg2", ["-r", "--remove"])
-def test_remove_stamp(arg1, arg2):
+def test_file_remove_stamp(arg1, arg2):
     """Check the retraction of the leading time stamp."""
     substitution = {"default" : "2021-09-21",
                     "short"   : "210921",
