@@ -43,16 +43,16 @@ def prepare_testfile():
     os.utime(TFILE, (result.st_atime, result.st_mtime + 10.0))
 
 
-def query_file_creation():
-    """Determine the time of creation of the file."""
-    created = os.stat(TFILE).st_ctime
+def query_creation_time(name=TFILE):
+    """Determine the time of creation of the file/folder."""
+    created = os.stat(name).st_ctime
     created = str(datetime.fromtimestamp(created))
     return created
 
 
-def query_file_modification():
-    """Determine the time when the file was modified."""
-    modified = os.stat(TFILE).st_mtime
+def query_modification_time(name=TFILE):
+    """Determine the time when the file/folder was modified."""
+    modified = os.stat(name).st_mtime
     modified = str(datetime.fromtimestamp(modified))
     return modified
 
@@ -84,10 +84,10 @@ def test_default_pattern_YYYY_MM_DD(arg1):
     new = str("")
 
     if arg1 in [" ", "-f", "--files", "-m", "--mtime"]:
-        day = query_file_modification().split()[0]
+        day = query_modification_time().split()[0]
 
     elif arg1 in ["-c", "--ctime"]:
-        day = query_file_creation().split()[0]
+        day = query_creation_time().split()[0]
 
     new = "_".join([day, TFILE])
     test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
@@ -112,11 +112,11 @@ def test_compact_pattern_YYYYMMDD(arg1):
                 "-C --files", "--compact --files",
                 "-C -m", "--compact -m",
                 "-C --mtime", "--compact --mtime"]:
-        day = query_file_modification().split()[0]
+        day = query_modification_time().split()[0]
 
     elif arg1 in ["-C -c", "--compact -c",
                   "-C --ctime", "--compact --ctime"]:
-        day = query_file_creation().split()[0]
+        day = query_creation_time().split()[0]
 
     # drop the hyphens in the datestamp:
     day = day.replace("-", "")
@@ -144,11 +144,11 @@ def test_compact_month_YYYY_MM(arg1):
                 "-M --files", "--month --files",
                 "-M -m", "--month -m",
                 "-M --mtime", "--month --mtime"]:
-        day = query_file_modification().split()[0]
+        day = query_modification_time().split()[0]
 
     elif arg1 in ["-M -c", "--month -c",
                   "-M --ctime", "--month --ctime"]:
-        day = query_file_creation().split()[0]
+        day = query_creation_time().split()[0]
 
     # trim off the last three characters in the datestamp:
     day = day[:-3]
@@ -174,13 +174,13 @@ def test_default_pattern_YYYY_MM_DDThh_mm_ss(arg1):
                 "--withtime -f", "--withtime --files",
                 "-w -m", "-w --mtime",
                 "--withtime -m", "--withtime --mtime"]:
-        day = query_file_modification().split()[0]
-        second = query_file_modification().split()[1]
+        day = query_modification_time().split()[0]
+        second = query_modification_time().split()[1]
 
     elif arg1 in ["-w -c", "-w --ctime",
                   "--withtime -c", "--withtime --ctime"]:
-        day = query_file_creation().split()[0]
-        second = query_file_creation().split()[1]
+        day = query_creation_time().split()[0]
+        second = query_creation_time().split()[1]
 
     second = second.split(".")[0]  # use integer seconds only
     second = second.replace(":", ".")  # adjust representation
@@ -209,11 +209,11 @@ def test_short_pattern_YYMMDD(arg1):
                 "-S --files", "--short --files",
                 "-S -m", "--short -m",
                 "-S --mtime", "--short --mtime"]:
-        day = query_file_modification().split()[0]
+        day = query_modification_time().split()[0]
 
     elif arg1 in ["-S -c", "--short -c",
                   "-S --ctime", "--short --ctime"]:
-        day = query_file_creation().split()[0]
+        day = query_creation_time().split()[0]
 
     # drop the hyphens in the datestamp:
     day = day.replace("-", "")
