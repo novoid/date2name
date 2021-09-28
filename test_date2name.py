@@ -64,6 +64,7 @@ def query_modification_time(name=TFILE):
     modified = str(datetime.fromtimestamp(modified))
     return modified
 
+@pytest.mark.elementary
 def test_create_remove_testfile(name=TFILE):
     """Merely check if the test file may be written and removed."""
     prepare_testfile(name=TFILE)
@@ -72,6 +73,7 @@ def test_create_remove_testfile(name=TFILE):
     assert os.path.isfile(name) is False
 
 
+@pytest.mark.elementary    
 def test_create_remove_testfolder(name=TFOLDER):
     """Probe the generation/removal of a test folder."""
     prepare_testfolder(name=TFOLDER)
@@ -80,11 +82,13 @@ def test_create_remove_testfolder(name=TFOLDER):
     assert os.path.isdir(name) is False
 
 
+@pytest.mark.elementary
 def test_script_existence():
     """Merely check for the script's presence."""
     assert os.path.isfile(PROGRAM)
 
 
+@pytest.mark.elementary    
 def test_script_version():
     """Check for the correct output of the version.
 
@@ -92,6 +96,7 @@ def test_script_version():
     out = getoutput(f"python3 {PROGRAM} --version")
     assert out.strip() == "__init__.py 2018-05-09"
 
+@pytest.mark.files
 @pytest.mark.parametrize("arg1", [" ", "-f", "--files",
                                   "-m", "--mtime",
                                   "-c", "--ctime"])
@@ -112,6 +117,7 @@ def test_file_pattern_default(arg1):
     assert os.path.isfile(new)
     os.remove(new)
 
+@pytest.mark.files
 @pytest.mark.parametrize("arg1", ["-C", "--compact",
                                   "-C -f", "--compact -f",
                                   "-C --files", "--compact --files",
@@ -144,6 +150,7 @@ def test_file_pattern_compact(arg1):
     assert os.path.isfile(new)
     os.remove(new)
 
+@pytest.mark.files
 @pytest.mark.parametrize("arg1", ["-M", "--month",
                                   "-M -f", "--month -f",
                                   "-M --files", "--month --files",
@@ -176,6 +183,7 @@ def test_file_pattern_month(arg1):
     assert os.path.isfile(new)
     os.remove(new)
 
+@pytest.mark.files
 @pytest.mark.parametrize("arg1", ["-w -f", "-w --files",
                                   "--withtime -f", "--withtime --files",
                                   "-w -m", "-w --mtime",
@@ -209,6 +217,7 @@ def test_file_pattern_withtime(arg1):
     assert os.path.isfile(new)
     os.remove(new)
 
+@pytest.mark.files
 @pytest.mark.parametrize("arg1", ["-S", "--short",
                                   "-S -f", "--short -f",
                                   "-S --files", "--short --files",
@@ -243,6 +252,7 @@ def test_file_pattern_short(arg1):
     assert os.path.isfile(new)
     os.remove(new)
 
+@pytest.mark.files
 @pytest.mark.parametrize("arg1", ["default", "short", "compact",
                                   "month", "withtime"])
 @pytest.mark.parametrize("arg2", ["-r", "--remove"])

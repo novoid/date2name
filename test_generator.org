@@ -81,6 +81,31 @@
       pytest-3 -v test_date2name.py   # pytest if Python 2 and Python 3 coexist
     #+end_src
 
+** Building a pytest.ini
+
+   This file defines markers which groups the tests into groups.  Subsequently,
+   tests with pytest may focus on them rather than performing all tests (which
+   is set up as the default).  In presence of =pytest.ini=, the typical call
+   then is
+   #+begin_src bash  :tangle no
+     pytest-3 test_date2name.py -v -m "elementary"
+   #+end_src
+   to constrain the tester's action to all tests labeled as "elementary".  At
+   present, tests are grouped as
+   + elementary; ahead of checking date2name's action on files or folders
+   + files; checking date2name's action on files, and
+   + folders; checking date2name's action on folders.
+   This became necessary since a reliable approach to stack the levels "files"
+   and "folders" in this testing suite was not yet identified.
+     
+
+   #+begin_src python :tangle pytest.ini
+     [pytest]
+     markers =
+         elementary:  elementary tests ahead of action on files/folders by date2name
+         files:       tests about affect by date2name on files
+         folders:     tests about affect by date2name on folders
+   #+end_src
 
 ** Building the test script
 
@@ -166,6 +191,7 @@
     These tests do not modify a file, nor folder by =date2time=.
 
     #+begin_src python :tangle test_date2name.py
+      @pytest.mark.elementary
       def test_create_remove_testfile(name=TFILE):
           """Merely check if the test file may be written and removed."""
           prepare_testfile(name=TFILE)
@@ -173,7 +199,8 @@
           os.remove(name)
           assert os.path.isfile(name) is False
       
-          
+      
+      @pytest.mark.elementary    
       def test_create_remove_testfolder(name=TFOLDER):
           """Probe the generation/removal of a test folder."""
           prepare_testfolder(name=TFOLDER)
@@ -181,12 +208,14 @@
           os.rmdir(name)
           assert os.path.isdir(name) is False
       
-          
+      
+      @pytest.mark.elementary
       def test_script_existence():
           """Merely check for the script's presence."""
           assert os.path.isfile(PROGRAM)
       
       
+      @pytest.mark.elementary    
       def test_script_version():
           """Check for the correct output of the version.
       
@@ -202,6 +231,7 @@
 
     + [X] default pattern, i.e. prepend YYYY-MM-DD_ to file test.txt
       #+begin_src python :tangle test_date2name.py
+        @pytest.mark.files
         @pytest.mark.parametrize("arg1", [" ", "-f", "--files",
                                           "-m", "--mtime",
                                           "-c", "--ctime"])
@@ -227,6 +257,7 @@
       This may re-use much of the instructions used for the default pattern
       and only needs to drop the hyphens.
       #+begin_src python :tangle test_date2name.py
+        @pytest.mark.files
         @pytest.mark.parametrize("arg1", ["-C", "--compact",
                                           "-C -f", "--compact -f",
                                           "-C --files", "--compact --files",
@@ -264,6 +295,7 @@
       Departing from the standard format YYYY-MM-DD, it suffices to trim
       off the last three characters.
       #+begin_src python :tangle test_date2name.py
+        @pytest.mark.files
         @pytest.mark.parametrize("arg1", ["-M", "--month",
                                           "-M -f", "--month -f",
                                           "-M --files", "--month --files",
@@ -300,6 +332,7 @@
     + [X] To prepend date and time to file test.txt in a pattern of
       YYYY-MM-DDThh.mm.ss, the default pattern YYYY-MM-DD is extended.
       #+begin_src python :tangle test_date2name.py
+        @pytest.mark.files
         @pytest.mark.parametrize("arg1", ["-w -f", "-w --files",
                                           "--withtime -f", "--withtime --files",
                                           "-w -m", "-w --mtime",
@@ -338,6 +371,7 @@
       Related to the basic pattern, except truncating of the first two
       characters.
       #+begin_src python :tangle test_date2name.py
+        @pytest.mark.files
         @pytest.mark.parametrize("arg1", ["-S", "--short",
                                           "-S -f", "--short -f",
                                           "-S --files", "--short --files",
@@ -383,6 +417,7 @@
       successful to retract this stamp.
       
       #+begin_src python :tangle test_date2name.py
+        @pytest.mark.files
         @pytest.mark.parametrize("arg1", ["default", "short", "compact",
                                           "month", "withtime"])
         @pytest.mark.parametrize("arg2", ["-r", "--remove"])
