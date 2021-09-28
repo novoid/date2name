@@ -13,8 +13,10 @@
 # chmod +x *
 # make ./Makefile
 #
-# to run the tests.  The test sequence either stops at the first test
-# failing, or after completion.
+# to run the tests.  The test sequence will explicitly report if a test
+# was passed successfully, or failed.  If you want to script to stop on
+# the first encounter of a test failed, add option -x on the commands
+# set below
 
-# pytest -xv test_date2name.py     # only pytest for Python 3 is present
-pytest-3 -xv test_date2name.py   # pytest if Python 2 and Python 3 coexist
+# pytest -v test_date2name.py     # only pytest for Python 3 is present
+pytest-3 -v test_date2name.py   # pytest if Python 2 and Python 3 coexist

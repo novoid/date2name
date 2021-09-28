@@ -4,7 +4,7 @@
 # author:  nbehrnd@yahoo.com
 # license: GPL v3, 2021.
 # date:    2021-08-30 (YYYY-MM-DD)
-# edit:    2021-09-17 (YYYY-MM-DD)
+# edit:    2021-09-28 (YYYY-MM-DD)
 #
 """Test pad for functions by date2name with pytest.
 
@@ -225,8 +225,8 @@ def test_short_pattern_YYMMDD(arg1):
     assert os.path.isfile(new)
     os.remove(new)
 
-import time, os, sys
-@pytest.mark.parametrize("arg1", ["default", "short", "compact", "month", "withtime"])
+@pytest.mark.parametrize("arg1", ["default", "short", "compact",
+                                  "month", "withtime"])
 @pytest.mark.parametrize("arg2", ["-r", "--remove"])
 def test_remove_stamp(arg1, arg2):
     """Check the retraction of the leading time stamp."""
@@ -242,15 +242,11 @@ def test_remove_stamp(arg1, arg2):
     TFILE = "_".join([prepend, BASIS])
     with open(TFILE, mode = "w") as newfile:
         newfile.write("This is a test file.")
-        time.sleep(2)
 
     test = getoutput(f"python3 {PROGRAM} {TFILE} {arg2}")
-    time.sleep(2)
+
     assert os.path.isfile(TFILE) is False  # absence of stamped file
     assert os.path.isfile(BASIS)           # presence unstamped file
 
-    try:
-        os.remove("test.txt")
-    except OSError:
-        print("Running remove test, file 'test.txt' was not erased.")
-        sys.exit()
+    os.remove("test.txt")  # succesful space cleaning for next test
+    assert os.path.isfile("test.txt") is False
