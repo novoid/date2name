@@ -32,15 +32,23 @@ import pytest
 
 PROGRAM = str("./date2name/__init__.py")
 TFILE = str("test_file.txt")  # the intermediate test file written
+TFOLDER = str("test_folder")  # for complementary check on folders
 
-def prepare_testfile():
+def prepare_testfile(name=TFILE):
     """The creation of the test file."""
-    with open (TFILE, mode="w") as newfile:
+    with open (name, mode="w") as newfile:
         newfile.write("This is the test file for test_date2name.py.")
     # adjust modification time stamp, based on
     # https://stackoverflow.com/questions/53111614/how-to-modify-the-file-modification-date-with-python-on-mac
-    result = os.stat(TFILE)
-    os.utime(TFILE, (result.st_atime, result.st_mtime + 10.0))
+    result = os.stat(name)
+    os.utime(name, (result.st_atime, result.st_mtime + 10.0))
+
+
+def prepare_testfolder(name=TFOLDER):
+    """Create a testfolder."""
+    os.mkdir(name)
+    result = os.stat(name)
+    os.utime(name, (result.st_atime, result.st_mtime + 10.0))
 
 
 def query_creation_time(name=TFILE):
@@ -56,10 +64,20 @@ def query_modification_time(name=TFILE):
     modified = str(datetime.fromtimestamp(modified))
     return modified
 
-def test_create_remove_testfile():
+def test_create_remove_testfile(name=TFILE):
     """Merely check if the test file may be written and removed."""
-    prepare_testfile()
-    os.remove(TFILE)
+    prepare_testfile(name=TFILE)
+    assert os.path.isfile(name)
+    os.remove(name)
+    assert os.path.isfile(name) is False
+
+
+def test_create_remove_testfolder(name=TFOLDER):
+    """Probe the generation/removal of a test folder."""
+    prepare_testfolder(name=TFOLDER)
+    assert os.path.isdir(name)
+    os.rmdir(name)
+    assert os.path.isdir(name) is False
 
 
 def test_script_existence():
