@@ -187,41 +187,6 @@ def test_file_pattern_month(arg1):
     os.remove(new)
 
 @pytest.mark.files
-@pytest.mark.withtime
-@pytest.mark.parametrize("arg1", ["-w -f", "-w --files",
-                                  "--withtime -f", "--withtime --files",
-                                  "-w -m", "-w --mtime",
-                                  "--withtime -m", "--withtime --mtime",
-                                  "-w -c", "-w --ctime",
-                                  "--withtime -c", "--withtime --ctime"])
-def test_file_pattern_withtime(arg1):
-    """Prepend 'YYYY-MM-DDThh.mm.ss_' to the file name."""
-    prepare_testfile()
-    day = str("")
-    new = str("")
-
-    if arg1 in ["-w -f", "-w --files",
-                "--withtime -f", "--withtime --files",
-                "-w -m", "-w --mtime",
-                "--withtime -m", "--withtime --mtime"]:
-        day = query_modification_time().split()[0]
-        second = query_modification_time().split()[1]
-
-    elif arg1 in ["-w -c", "-w --ctime",
-                  "--withtime -c", "--withtime --ctime"]:
-        day = query_creation_time().split()[0]
-        second = query_creation_time().split()[1]
-
-    second = second.split(".")[0]  # use integer seconds only
-    second = second.replace(":", ".")  # adjust representation
-
-    new = "".join([day, "T", second, "_", TFILE])
-
-    test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
-    assert os.path.isfile(new)
-    os.remove(new)
-
-@pytest.mark.files
 @pytest.mark.short
 @pytest.mark.parametrize("arg1", ["-S", "--short",
                                   "-S -f", "--short -f",
@@ -253,6 +218,41 @@ def test_file_pattern_short(arg1):
     day = day[2:]
 
     new = "_".join([day, TFILE])
+    test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
+    assert os.path.isfile(new)
+    os.remove(new)
+
+@pytest.mark.files
+@pytest.mark.withtime
+@pytest.mark.parametrize("arg1", ["-w -f", "-w --files",
+                                  "--withtime -f", "--withtime --files",
+                                  "-w -m", "-w --mtime",
+                                  "--withtime -m", "--withtime --mtime",
+                                  "-w -c", "-w --ctime",
+                                  "--withtime -c", "--withtime --ctime"])
+def test_file_pattern_withtime(arg1):
+    """Prepend 'YYYY-MM-DDThh.mm.ss_' to the file name."""
+    prepare_testfile()
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-w -f", "-w --files",
+                "--withtime -f", "--withtime --files",
+                "-w -m", "-w --mtime",
+                "--withtime -m", "--withtime --mtime"]:
+        day = query_modification_time().split()[0]
+        second = query_modification_time().split()[1]
+
+    elif arg1 in ["-w -c", "-w --ctime",
+                  "--withtime -c", "--withtime --ctime"]:
+        day = query_creation_time().split()[0]
+        second = query_creation_time().split()[1]
+
+    second = second.split(".")[0]  # use integer seconds only
+    second = second.replace(":", ".")  # adjust representation
+
+    new = "".join([day, "T", second, "_", TFILE])
+
     test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
     assert os.path.isfile(new)
     os.remove(new)

@@ -115,11 +115,11 @@
          files:       tests about affect by date2name on files
          folders:     tests about affect by date2name on folders
      
-         default:     stamp pattern default
-         compact:     stamp pattern compact
-         month:       stamp pattern month
-         withtime:    stamp pattern withtime
-         short:       stamp pattern short
+         default:     stamp pattern default, YYYY-MM-DD
+         compact:     stamp pattern compact, YYYYMMDD
+         month:       stamp pattern month, YYYY-MM
+         short:       stamp pattern short, YYMMDD
+         withtime:    stamp pattern withtime, YYYY-MM-DDThh.mm.ss
          remove:      stamp retraction
    #+end_src
 
@@ -241,7 +241,7 @@
     #+end_src
 
 
-*** perform the tests on files [5/6]
+*** perform the tests on files [6/6]
 
     These tests check the addition of a time stamp ahead of the file name.
 
@@ -270,9 +270,9 @@
             os.remove(new)
       #+end_src
 
-    + [X] prepend the day in the compact format YYYYMMDD_ to file test.txt
-      This may re-use much of the instructions used for the default pattern
-      and only needs to drop the hyphens.
+    + [X] compact pattern, i.e. prepend YYYYMMDD_ to file test.txt.  This may
+      re-use much of the instructions used for the default pattern and only
+      needs to drop the hyphens.
       #+begin_src python :tangle test_date2name.py
         @pytest.mark.files
         @pytest.mark.compact
@@ -309,7 +309,7 @@
             os.remove(new)
       #+end_src
 
-    + [X] Prepend year and month in the format YYYY-MM_ to file test.txt.
+    + [X] month pattern, i.e. prepend YYYY-MM_ to file test.txt.
       Departing from the standard format YYYY-MM-DD, it suffices to trim
       off the last three characters.
       #+begin_src python :tangle test_date2name.py
@@ -348,48 +348,9 @@
             os.remove(new)
       #+end_src
 
-    + [X] To prepend date and time to file test.txt in a pattern of
-      YYYY-MM-DDThh.mm.ss, the default pattern YYYY-MM-DD is extended.
-      #+begin_src python :tangle test_date2name.py
-        @pytest.mark.files
-        @pytest.mark.withtime
-        @pytest.mark.parametrize("arg1", ["-w -f", "-w --files",
-                                          "--withtime -f", "--withtime --files",
-                                          "-w -m", "-w --mtime",
-                                          "--withtime -m", "--withtime --mtime",
-                                          "-w -c", "-w --ctime",
-                                          "--withtime -c", "--withtime --ctime"])
-        def test_file_pattern_withtime(arg1):
-            """Prepend 'YYYY-MM-DDThh.mm.ss_' to the file name."""
-            prepare_testfile()
-            day = str("")
-            new = str("")
-        
-            if arg1 in ["-w -f", "-w --files",
-                        "--withtime -f", "--withtime --files",
-                        "-w -m", "-w --mtime",
-                        "--withtime -m", "--withtime --mtime"]:
-                day = query_modification_time().split()[0]
-                second = query_modification_time().split()[1]
-        
-            elif arg1 in ["-w -c", "-w --ctime",
-                          "--withtime -c", "--withtime --ctime"]:
-                day = query_creation_time().split()[0]
-                second = query_creation_time().split()[1]
-        
-            second = second.split(".")[0]  # use integer seconds only
-            second = second.replace(":", ".")  # adjust representation
-        
-            new = "".join([day, "T", second, "_", TFILE])
-        
-            test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
-            assert os.path.isfile(new)
-            os.remove(new)
-      #+end_src
-
-    + [X] Preprend the short datestamp (YYMMDD, feature by Reiner Rottmann)
-      Related to the basic pattern, except truncating of the first two
-      characters.
+    + [X] short pattern, i.e. preprend YYMMDD_ to file test.txt.  A feature by
+      Reiner Rottmann.  Related to the basic pattern, except the two first
+      characters are truncated.
       #+begin_src python :tangle test_date2name.py
         @pytest.mark.files
         @pytest.mark.short
@@ -428,27 +389,66 @@
             os.remove(new)
       #+end_src
 
-    + [ ] Check the retraction of the date/time stamp
+    + [X] withtime pattern, i.e. prepend YYYY-MM-DDThh.mm.ss_ to file test.txt.
+      This extends the default pattern YYYY-MM-DD.
+      #+begin_src python :tangle test_date2name.py
+        @pytest.mark.files
+        @pytest.mark.withtime
+        @pytest.mark.parametrize("arg1", ["-w -f", "-w --files",
+                                          "--withtime -f", "--withtime --files",
+                                          "-w -m", "-w --mtime",
+                                          "--withtime -m", "--withtime --mtime",
+                                          "-w -c", "-w --ctime",
+                                          "--withtime -c", "--withtime --ctime"])
+        def test_file_pattern_withtime(arg1):
+            """Prepend 'YYYY-MM-DDThh.mm.ss_' to the file name."""
+            prepare_testfile()
+            day = str("")
+            new = str("")
+        
+            if arg1 in ["-w -f", "-w --files",
+                        "--withtime -f", "--withtime --files",
+                        "-w -m", "-w --mtime",
+                        "--withtime -m", "--withtime --mtime"]:
+                day = query_modification_time().split()[0]
+                second = query_modification_time().split()[1]
+        
+            elif arg1 in ["-w -c", "-w --ctime",
+                          "--withtime -c", "--withtime --ctime"]:
+                day = query_creation_time().split()[0]
+                second = query_creation_time().split()[1]
+        
+            second = second.split(".")[0]  # use integer seconds only
+            second = second.replace(":", ".")  # adjust representation
+        
+            new = "".join([day, "T", second, "_", TFILE])
+        
+            test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
+            assert os.path.isfile(new)
+            os.remove(new)
+      #+end_src
 
-      The test is constrained to the five fix formats prepending the file name.
+    + [X] Check the retraction of the date/time stamp on files.
 
-      /Not ready for inclusion into the main branch/ To trace the advancement of
-      pytest's processing, long delays are set.  A manual check of date2time on
-      the CLI confirms that date2name writes the --withtime format, but is not
-      successful to retract this stamp.
-      
+      Based on a pattern comparison, a file like =20210921_test.txt= is renamed
+      =test.txt=.  At present (Linux Debian 12/bookworm, branch testing),
+      date2name is known to struggle for files with the tag date2time prepended
+      by parameter =--withtime= (or =-w=).  This is why the two corrsponding
+      tests fail.
+
       #+begin_src python :tangle test_date2name.py
         @pytest.mark.files
         @pytest.mark.remove
-        @pytest.mark.parametrize("arg1", ["default", "short", "compact",
-                                          "month", "withtime"])
+        @pytest.mark.parametrize("arg1", ["default",
+                                          "compact", "month", "short",
+                                          "withtime"])
         @pytest.mark.parametrize("arg2", ["-r", "--remove"])
         def test_file_remove_stamp(arg1, arg2):
             """Check the retraction of the leading time stamp."""
             substitution = {"default" : "2021-09-21",
-                            "short"   : "210921",
                             "compact" : "20210921",
                             "month"   : "2021-09",
+                            "short"   : "210921",
                             "withtime": "2021-09-21T13.59.59"}
             prepend = substitution.get(arg1)
         
