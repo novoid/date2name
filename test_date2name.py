@@ -259,15 +259,16 @@ def test_file_pattern_withtime(arg1):
 
 @pytest.mark.files
 @pytest.mark.remove
-@pytest.mark.parametrize("arg1", ["default", "short", "compact",
-                                  "month", "withtime"])
+@pytest.mark.parametrize("arg1", ["default",
+                                  "compact", "month", "short",
+                                  "withtime"])
 @pytest.mark.parametrize("arg2", ["-r", "--remove"])
 def test_file_remove_stamp(arg1, arg2):
     """Check the retraction of the leading time stamp."""
     substitution = {"default" : "2021-09-21",
-                    "short"   : "210921",
                     "compact" : "20210921",
                     "month"   : "2021-09",
+                    "short"   : "210921",
                     "withtime": "2021-09-21T13.59.59"}
     prepend = substitution.get(arg1)
 
@@ -284,3 +285,27 @@ def test_file_remove_stamp(arg1, arg2):
 
     os.remove("test.txt")  # succesful space cleaning for next test
     assert os.path.isfile("test.txt") is False
+
+@pytest.mark.folders
+@pytest.mark.default
+@pytest.mark.parametrize("arg1", [" ", "-d", "--directories",
+                                  "-m", "--mtime",
+                                  "-c", "--ctime"])
+def test_folder_pattern_default(arg1, name=TFOLDER):
+    """Prepend 'YYYY-MM-DD_' to the folder name."""
+    prepare_testfolder(name)
+    day = str("")
+    new = str("")
+
+    if arg1 in [" ", "-d", "--directories", "-m", "--mtime"]:
+        day = query_modification_time(name).split()[0]
+
+    elif arg1 in ["-c", "--ctime"]:
+        day = query_creation_time(name).split()[0]
+
+    new = "_".join([day, name])
+    test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
+    assert os.path.isdir(name) is False  # absence unstamped folder
+    assert os.path.isdir(new)            # presence stamped folder
+    os.rmdir(new)
+    assert os.path.isdir(new) is False   # space cleaning

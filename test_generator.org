@@ -466,3 +466,52 @@
             os.remove("test.txt")  # succesful space cleaning for next test
             assert os.path.isfile("test.txt") is False
       #+end_src
+
+*** perform the tests on folders [1/6]
+
+    At present, most of the instructions already defined and used in section
+    "test on files" is repeated with small adjustments for checking date2name's
+    action on folders.  While this approach isn't dry, given current experience,
+    it however is more reliable in eventual code execution running pytest, than
+    stacking the files/folders levels as an additional parameter.
+
+    + [X] default pattern, YYYY-MM-DD_ prepended
+      #+begin_src python :tangle test_date2name.py
+        @pytest.mark.folders
+        @pytest.mark.default
+        @pytest.mark.parametrize("arg1", [" ", "-d", "--directories",
+                                          "-m", "--mtime",
+                                          "-c", "--ctime"])
+        def test_folder_pattern_default(arg1, name=TFOLDER):
+            """Prepend 'YYYY-MM-DD_' to the folder name."""
+            prepare_testfolder(name)
+            day = str("")
+            new = str("")
+        
+            if arg1 in [" ", "-d", "--directories", "-m", "--mtime"]:
+                day = query_modification_time(name).split()[0]
+        
+            elif arg1 in ["-c", "--ctime"]:
+                day = query_creation_time(name).split()[0]
+        
+            new = "_".join([day, name])
+            test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
+            assert os.path.isdir(name) is False  # absence unstamped folder
+            assert os.path.isdir(new)            # presence stamped folder
+            os.rmdir(new)
+            assert os.path.isdir(new) is False   # space cleaning
+      #+end_src
+      
+    + [ ] compact pattern, YYYYMMDD_ prepended
+      
+    + [ ] month pattern, YYYY-MM_ prepended
+      
+    + [ ] short pattern, YYMMDD_ prepended
+      
+    + [ ] withtime pattern, YYYY-MM-DDThh.mm.ss_ prepended
+      
+    + [ ] retraction of the date/time stamp
+
+
+
+
