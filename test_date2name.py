@@ -422,3 +422,41 @@ def test_folder_pattern_short(arg1, name=TFOLDER):
     assert os.path.isdir(new)            # presence stamped folder
     os.rmdir(new)
     assert os.path.isdir(new) is False   # space cleaning
+
+@pytest.mark.folders
+@pytest.mark.withtime
+@pytest.mark.parametrize("arg1", ["-w -d", "-w --directories",
+                                  "--withtime -d", "--withtime --directories",
+                                  "-w -m", "-w --mtime",
+                                  "--withtime -m", "--withtime --mtime",
+                                  "-w -c", "-w --ctime",
+                                  "--withtime -c", "--withtime --ctime"])
+def test_file_pattern_withtime(arg1, name=TFOLDER):
+    """Prepend 'YYYY-MM-DDThh.mm.ss_' to the folder name."""
+    prepare_testfolder(name)
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-w -d", "-w --directories",
+                "--withtime -d", "--withtime --directories",
+                "-w -m", "-w --mtime",
+                "--withtime -m", "--withtime --mtime"]:
+        day = query_modification_time(name).split()[0]
+        second = query_modification_time(name).split()[1]
+
+    elif arg1 in ["-w -c", "-w --ctime",
+                  "--withtime -c", "--withtime --ctime"]:
+        day = query_creation_time(name).split()[0]
+        second = query_creation_time(name).split()[1]
+
+    second = second.split(".")[0]  # use integer seconds only
+    second = second.replace(":", ".")  # adjust representation
+
+    new = "".join([day, "T", second, "_", name])
+
+    test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
+
+    assert os.path.isdir(name) is False  # absence unstamped folder
+    assert os.path.isdir(new)            # presence stamped folder
+    os.rmdir(new)
+    assert os.path.isdir(new) is False   # space cleaning
