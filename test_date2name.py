@@ -309,3 +309,40 @@ def test_folder_pattern_default(arg1, name=TFOLDER):
     assert os.path.isdir(new)            # presence stamped folder
     os.rmdir(new)
     assert os.path.isdir(new) is False   # space cleaning
+
+@pytest.mark.folders
+@pytest.mark.compact
+@pytest.mark.parametrize("arg1", ["-C", "--compact",
+                                  "-C -d", "--compact -d",
+                                  "-C --directories", "--compact --directories",
+                                  "-C -m", "--compact -m",
+                                  "-C --mtime", "--compact --mtime",
+                                  "-C -c", "--compact -c",
+                                  "-C --ctime", "--compact --ctime"])
+def test_folder_pattern_compact(arg1, name=TFOLDER):
+    """Prepend 'YYYYMMDD_' to the folder name."""
+    prepare_testfolder(name)
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-C", "--compact",
+                "-C -d", "--compact -d",
+                "-C --directories", "--compact --directories",
+                "-C -m", "--compact -m",
+                "-C --mtime", "--compact --mtime"]:
+        day = query_modification_time(name).split()[0]
+
+    elif arg1 in ["-C -c", "--compact -c",
+                  "-C --ctime", "--compact --ctime"]:
+        day = query_creation_time(name).split()[0]
+
+    # drop the hyphens in the datestamp:
+    day = day.replace("-", "")
+
+    new = "_".join([day, name])
+    test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
+
+    assert os.path.isdir(name) is False  # absence unstamped folder
+    assert os.path.isdir(new)            # presence stamped folder
+    os.rmdir(new)
+    assert os.path.isdir(new) is False   # space cleaning
