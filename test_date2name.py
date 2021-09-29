@@ -45,7 +45,7 @@ def prepare_testfile(name=TFILE):
 
 
 def prepare_testfolder(name=TFOLDER):
-    """Create a testfolder."""
+    """Create a test folder."""
     os.mkdir(name)
     result = os.stat(name)
     os.utime(name, (result.st_atime, result.st_mtime + 10.0))
@@ -144,7 +144,7 @@ def test_file_pattern_compact(arg1):
                   "-C --ctime", "--compact --ctime"]:
         day = query_creation_time().split()[0]
 
-    # drop the hyphens in the datestamp:
+    # drop the hyphens in the date stamp:
     day = day.replace("-", "")
 
     new = "_".join([day, TFILE])
@@ -178,7 +178,7 @@ def test_file_pattern_month(arg1):
                   "-M --ctime", "--month --ctime"]:
         day = query_creation_time().split()[0]
 
-    # trim off the last three characters in the datestamp:
+    # trim off the last three characters in the date stamp:
     day = day[:-3]
 
     new = "_".join([day, TFILE])
@@ -212,7 +212,7 @@ def test_file_pattern_short(arg1):
                   "-S --ctime", "--short --ctime"]:
         day = query_creation_time().split()[0]
 
-    # drop the hyphens in the datestamp:
+    # drop the hyphens in the date stamp:
     day = day.replace("-", "")
     # drop the first two characters about the year (e.g., 1789 -> 89)
     day = day[2:]
@@ -283,7 +283,7 @@ def test_file_remove_stamp(arg1, arg2):
     assert os.path.isfile(TFILE) is False  # absence of stamped file
     assert os.path.isfile(BASIS)           # presence unstamped file
 
-    os.remove("test.txt")  # succesful space cleaning for next test
+    os.remove("test.txt")  # successful space cleaning for next test
     assert os.path.isfile("test.txt") is False
 
 @pytest.mark.folders
@@ -336,7 +336,7 @@ def test_folder_pattern_compact(arg1, name=TFOLDER):
                   "-C --ctime", "--compact --ctime"]:
         day = query_creation_time(name).split()[0]
 
-    # drop the hyphens in the datestamp:
+    # drop the hyphens in the date stamp:
     day = day.replace("-", "")
 
     new = "_".join([day, name])
@@ -373,7 +373,7 @@ def test_file_pattern_month(arg1, name=TFOLDER):
                   "-M --ctime", "--month --ctime"]:
         day = query_creation_time(name).split()[0]
 
-    # trim off the last three characters in the datestamp:
+    # trim off the last three characters in the date stamp:
     day = day[:-3]
 
     new = "_".join([day, name])
@@ -410,7 +410,7 @@ def test_folder_pattern_short(arg1, name=TFOLDER):
                   "-S --ctime", "--short --ctime"]:
         day = query_creation_time(name).split()[0]
 
-    # drop the hyphens in the datestamp:
+    # drop the hyphens in the date stamp:
     day = day.replace("-", "")
     # drop the first two characters about the year (e.g., 1789 -> 89)
     day = day[2:]
@@ -460,3 +460,32 @@ def test_file_pattern_withtime(arg1, name=TFOLDER):
     assert os.path.isdir(new)            # presence stamped folder
     os.rmdir(new)
     assert os.path.isdir(new) is False   # space cleaning
+
+@pytest.mark.folders
+@pytest.mark.remove
+@pytest.mark.parametrize("arg1", ["default",
+                                  "compact", "month", "short",
+                                  "withtime"])
+@pytest.mark.parametrize("arg2", ["-r", "--remove"])
+def test_folder_remove_stamp(arg1, arg2, name=TFOLDER):
+    """Check the retraction of the leading time stamp."""
+    substitution = {"default" : "2021-09-21",
+                    "compact" : "20210921",
+                    "month"   : "2021-09",
+                    "short"   : "210921",
+                    "withtime": "2021-09-21T13.59.59"}
+    prepend = substitution.get(arg1)
+
+    # os.mkdir(name)
+    BASIS = str(name)
+    stamped_folder = ""
+    stamped_folder = "_".join([prepend, BASIS])
+    os.mkdir(stamped_folder)
+    assert os.path.isdir(stamped_folder)  # presence stamped folder
+
+    test = getoutput(f"python3 {PROGRAM} {stamped_folder} {arg2}")
+
+    assert os.path.isdir(stamped_folder) is False
+    assert os.path.isdir(name)           # presence unstamped folder
+    os.rmdir(name)
+    assert os.path.isdir(name) is False  # space cleaning

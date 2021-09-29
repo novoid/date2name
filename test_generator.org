@@ -8,7 +8,7 @@
 
 * Intent
 
-  The application =date2name= by Karl Voit /et al./ ([[https://github.com/novoid/date2name][source)]] prepends datestamps
+  The application =date2name= by Karl Voit /et al./ ([[https://github.com/novoid/date2name][source)]] prepends date stamps
   to files and folders (YYYY-MM-DD, YYYYMMDD, YYYY-MM, and YYYY-MM-DDThh.mm.ss).
   This Emacs .org file is used to prepare the automatic testing of the file
   processing by [[https://docs.pytest.org/en/latest/][pytest]].
@@ -24,7 +24,7 @@
 
 * Dependencies
 
-  The testing script is set up with Python 3.9.2 in mind.  Thus, to run the
+  The testing script is set up with Python 3.9.7 in mind.  Thus, to run the
   tests successfully, you need a working installation of Python 3 with pytest
   for Python 3.
 
@@ -34,7 +34,7 @@
   tests is either one of the following instructions (you might need to add the
   executable bit):
 
-  python pytest -xv test_date2name.py
+  python pytest -v test_date2name.py
   ./Makefile
 
   In case the computer you use equally includes an installation of legacy
@@ -42,11 +42,13 @@
   branch of the two.  Depending on your OS, this requires an adjustment of the
   command issue.  In Linux Debian 12/bookworm, branch testing, for example,
 
-  python3 pytest-3 -xv test_date2name.py
+  python3 pytest-3 -v test_date2name.py
 
   or, after adjustment of the =Makefile= and provision of the executable bit
 
   ./Makefile
+
+  See section about building a =pytest.ini= for additional options prepared.
 
 
 * Building the tests
@@ -181,7 +183,7 @@
       
       
       def prepare_testfolder(name=TFOLDER):
-          """Create a testfolder."""
+          """Create a test folder."""
           os.mkdir(name)
           result = os.stat(name)
           os.utime(name, (result.st_atime, result.st_mtime + 10.0))
@@ -300,7 +302,7 @@
                           "-C --ctime", "--compact --ctime"]:
                 day = query_creation_time().split()[0]
         
-            # drop the hyphens in the datestamp:
+            # drop the hyphens in the date stamp:
             day = day.replace("-", "")
         
             new = "_".join([day, TFILE])
@@ -339,7 +341,7 @@
                           "-M --ctime", "--month --ctime"]:
                 day = query_creation_time().split()[0]
         
-            # trim off the last three characters in the datestamp:
+            # trim off the last three characters in the date stamp:
             day = day[:-3]
         
             new = "_".join([day, TFILE])
@@ -348,7 +350,7 @@
             os.remove(new)
       #+end_src
 
-    + [X] short pattern, i.e. preprend YYMMDD_ to file test.txt.  A feature by
+    + [X] short pattern, i.e. prepend YYMMDD_ to file test.txt.  A feature by
       Reiner Rottmann.  Related to the basic pattern, except the two first
       characters are truncated.
       #+begin_src python :tangle test_date2name.py
@@ -378,7 +380,7 @@
                           "-S --ctime", "--short --ctime"]:
                 day = query_creation_time().split()[0]
         
-            # drop the hyphens in the datestamp:
+            # drop the hyphens in the date stamp:
             day = day.replace("-", "")
             # drop the first two characters about the year (e.g., 1789 -> 89)
             day = day[2:]
@@ -433,7 +435,7 @@
       Based on a pattern comparison, a file like =20210921_test.txt= is renamed
       =test.txt=.  At present (Linux Debian 12/bookworm, branch testing),
       date2name is known to struggle for files with the tag date2time prepended
-      by parameter =--withtime= (or =-w=).  This is why the two corrsponding
+      by parameter =--withtime= (or =-w=).  This is why the two corresponding
       tests fail.
 
       #+begin_src python :tangle test_date2name.py
@@ -463,11 +465,11 @@
             assert os.path.isfile(TFILE) is False  # absence of stamped file
             assert os.path.isfile(BASIS)           # presence unstamped file
         
-            os.remove("test.txt")  # succesful space cleaning for next test
+            os.remove("test.txt")  # successful space cleaning for next test
             assert os.path.isfile("test.txt") is False
       #+end_src
 
-*** perform the tests on folders [5/6]
+*** perform the tests on folders [6/6]
 
     At present, most of the instructions already defined and used in section
     "test on files" is repeated with small adjustments for checking date2name's
@@ -530,7 +532,7 @@
                           "-C --ctime", "--compact --ctime"]:
                 day = query_creation_time(name).split()[0]
         
-            # drop the hyphens in the datestamp:
+            # drop the hyphens in the date stamp:
             day = day.replace("-", "")
         
             new = "_".join([day, name])
@@ -570,7 +572,7 @@
                           "-M --ctime", "--month --ctime"]:
                 day = query_creation_time(name).split()[0]
         
-            # trim off the last three characters in the datestamp:
+            # trim off the last three characters in the date stamp:
             day = day[:-3]
         
             new = "_".join([day, name])
@@ -610,7 +612,7 @@
                           "-S --ctime", "--short --ctime"]:
                 day = query_creation_time(name).split()[0]
         
-            # drop the hyphens in the datestamp:
+            # drop the hyphens in the date stamp:
             day = day.replace("-", "")
             # drop the first two characters about the year (e.g., 1789 -> 89)
             day = day[2:]
@@ -665,7 +667,42 @@
             assert os.path.isdir(new) is False   # space cleaning
       #+end_src
       
-    + [ ] retraction of the date/time stamp
+    + [X] retraction of the date/time stamp
+
+      Similar to the retraction of a prepended time stamp on files, the two
+      checks to remove a time stamp added by =--withtime= or =-w= currently fail
+      when running =pytest-3= on Linux Debian 12/bookworm, branch testing.
+      
+      #+begin_src python :tangle test_date2name.py
+        @pytest.mark.folders
+        @pytest.mark.remove
+        @pytest.mark.parametrize("arg1", ["default",
+                                          "compact", "month", "short",
+                                          "withtime"])
+        @pytest.mark.parametrize("arg2", ["-r", "--remove"])
+        def test_folder_remove_stamp(arg1, arg2, name=TFOLDER):
+            """Check the retraction of the leading time stamp."""
+            substitution = {"default" : "2021-09-21",
+                            "compact" : "20210921",
+                            "month"   : "2021-09",
+                            "short"   : "210921",
+                            "withtime": "2021-09-21T13.59.59"}
+            prepend = substitution.get(arg1)
+        
+            # os.mkdir(name)
+            BASIS = str(name)
+            stamped_folder = ""
+            stamped_folder = "_".join([prepend, BASIS])
+            os.mkdir(stamped_folder)
+            assert os.path.isdir(stamped_folder)  # presence stamped folder
+        
+            test = getoutput(f"python3 {PROGRAM} {stamped_folder} {arg2}")
+        
+            assert os.path.isdir(stamped_folder) is False
+            assert os.path.isdir(name)           # presence unstamped folder
+            os.rmdir(name)
+            assert os.path.isdir(name) is False  # space cleaning
+      #+end_src
 
 
 
