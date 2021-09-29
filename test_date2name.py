@@ -4,7 +4,7 @@
 # author:  nbehrnd@yahoo.com
 # license: GPL v3, 2021.
 # date:    2021-08-30 (YYYY-MM-DD)
-# edit:    2021-09-28 (YYYY-MM-DD)
+# edit:    2021-09-29 (YYYY-MM-DD)
 #
 """Test pad for functions by date2name with pytest.
 
@@ -97,6 +97,7 @@ def test_script_version():
     assert out.strip() == "__init__.py 2018-05-09"
 
 @pytest.mark.files
+@pytest.mark.default
 @pytest.mark.parametrize("arg1", [" ", "-f", "--files",
                                   "-m", "--mtime",
                                   "-c", "--ctime"])
@@ -118,6 +119,7 @@ def test_file_pattern_default(arg1):
     os.remove(new)
 
 @pytest.mark.files
+@pytest.mark.compact
 @pytest.mark.parametrize("arg1", ["-C", "--compact",
                                   "-C -f", "--compact -f",
                                   "-C --files", "--compact --files",
@@ -151,6 +153,7 @@ def test_file_pattern_compact(arg1):
     os.remove(new)
 
 @pytest.mark.files
+@pytest.mark.month
 @pytest.mark.parametrize("arg1", ["-M", "--month",
                                   "-M -f", "--month -f",
                                   "-M --files", "--month --files",
@@ -184,6 +187,7 @@ def test_file_pattern_month(arg1):
     os.remove(new)
 
 @pytest.mark.files
+@pytest.mark.withtime
 @pytest.mark.parametrize("arg1", ["-w -f", "-w --files",
                                   "--withtime -f", "--withtime --files",
                                   "-w -m", "-w --mtime",
@@ -218,6 +222,7 @@ def test_file_pattern_withtime(arg1):
     os.remove(new)
 
 @pytest.mark.files
+@pytest.mark.short
 @pytest.mark.parametrize("arg1", ["-S", "--short",
                                   "-S -f", "--short -f",
                                   "-S --files", "--short --files",
@@ -253,6 +258,7 @@ def test_file_pattern_short(arg1):
     os.remove(new)
 
 @pytest.mark.files
+@pytest.mark.remove
 @pytest.mark.parametrize("arg1", ["default", "short", "compact",
                                   "month", "withtime"])
 @pytest.mark.parametrize("arg2", ["-r", "--remove"])

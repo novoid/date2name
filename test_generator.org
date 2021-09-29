@@ -1,6 +1,6 @@
 #+NAME:    test_generator.org
 #+AUTHOR:  nbehrnd@yahoo.com
-#+DATE:    2021-09-22 (YYYY-MM-DD)
+#+DATE:    2021-09-29 (YYYY-MM-DD)
 # License: GPL3, 2021.
 
 #+PROPERTY: header-args :tangle yes
@@ -95,6 +95,15 @@
    + elementary; ahead of checking date2name's action on files or folders
    + files; checking date2name's action on files, and
    + folders; checking date2name's action on folders.
+   in a first layer.  Orthogonal to this, the five fixed pattern (keyword
+   =default=, =compact=, =month=, =withtime=, or =short=) and the stamps'
+   retraction (keyword =remove=) may be used as mutually exclusive levels,
+   either alone, or in combination with the keyword =files= or =folders=, e.g.
+   
+   #+begin_src bash :tangle no
+     pytest-3 test_date2name.py -m "files and default" -v
+   #+end_src
+     
    This became necessary since a reliable approach to stack the levels "files"
    and "folders" in this testing suite was not yet identified.
      
@@ -105,6 +114,13 @@
          elementary:  elementary tests ahead of action on files/folders by date2name
          files:       tests about affect by date2name on files
          folders:     tests about affect by date2name on folders
+     
+         default:     stamp pattern default
+         compact:     stamp pattern compact
+         month:       stamp pattern month
+         withtime:    stamp pattern withtime
+         short:       stamp pattern short
+         remove:      stamp retraction
    #+end_src
 
 ** Building the test script
@@ -117,7 +133,7 @@
       # author:  nbehrnd@yahoo.com
       # license: GPL v3, 2021.
       # date:    2021-08-30 (YYYY-MM-DD)
-      # edit:    2021-09-28 (YYYY-MM-DD)
+      # edit:    2021-09-29 (YYYY-MM-DD)
       #
       """Test pad for functions by date2name with pytest.
       
@@ -232,6 +248,7 @@
     + [X] default pattern, i.e. prepend YYYY-MM-DD_ to file test.txt
       #+begin_src python :tangle test_date2name.py
         @pytest.mark.files
+        @pytest.mark.default
         @pytest.mark.parametrize("arg1", [" ", "-f", "--files",
                                           "-m", "--mtime",
                                           "-c", "--ctime"])
@@ -258,6 +275,7 @@
       and only needs to drop the hyphens.
       #+begin_src python :tangle test_date2name.py
         @pytest.mark.files
+        @pytest.mark.compact
         @pytest.mark.parametrize("arg1", ["-C", "--compact",
                                           "-C -f", "--compact -f",
                                           "-C --files", "--compact --files",
@@ -296,6 +314,7 @@
       off the last three characters.
       #+begin_src python :tangle test_date2name.py
         @pytest.mark.files
+        @pytest.mark.month
         @pytest.mark.parametrize("arg1", ["-M", "--month",
                                           "-M -f", "--month -f",
                                           "-M --files", "--month --files",
@@ -333,6 +352,7 @@
       YYYY-MM-DDThh.mm.ss, the default pattern YYYY-MM-DD is extended.
       #+begin_src python :tangle test_date2name.py
         @pytest.mark.files
+        @pytest.mark.withtime
         @pytest.mark.parametrize("arg1", ["-w -f", "-w --files",
                                           "--withtime -f", "--withtime --files",
                                           "-w -m", "-w --mtime",
@@ -372,6 +392,7 @@
       characters.
       #+begin_src python :tangle test_date2name.py
         @pytest.mark.files
+        @pytest.mark.short
         @pytest.mark.parametrize("arg1", ["-S", "--short",
                                           "-S -f", "--short -f",
                                           "-S --files", "--short --files",
@@ -418,6 +439,7 @@
       
       #+begin_src python :tangle test_date2name.py
         @pytest.mark.files
+        @pytest.mark.remove
         @pytest.mark.parametrize("arg1", ["default", "short", "compact",
                                           "month", "withtime"])
         @pytest.mark.parametrize("arg2", ["-r", "--remove"])
