@@ -31,13 +31,13 @@ FORMATSTRING_MONTH    = "%Y-%m"
 FORMATSTRING_WITHTIME = "%Y-%m-%dT%H.%M.%S"
 REGEX_PATTERNS = {
     'NODATESTAMP': re.compile('^\D'),
-    'SHORT': re.compile('^\d{2,2}[01]\d[0123]\d[- _]'),
-    'COMPACT': re.compile('^\d{4,4}[01]\d[0123]\d[- _]'),
-    'STANDARD': re.compile('^\d{4,4}-[01]\d-[0123]\d[- _]'),
-    'MONTH': re.compile('^\d{4,4}-[01]\d[- _]'),
-    'WITHTIME_AND_SECONDS': re.compile('^\d{4,4}-[01]\d-[0123]\d([T :_-])([012]\d)([:.-])([012345]\d)([:.-])([012345]\d)[- _.]'),
-    'WITHTIME_NO_SECONDS':  re.compile('^\d{4,4}-[01]\d-[0123]\d([T :_-])([012]\d)([:.-])([012345]\d)[- _.]'),
-    'WITHSECONDS': re.compile('^\d{4,4}-[01]\d-[0123]\d[T :_-][012]\d[:.-][012345]\d[:.-][012345]\d[- _]'),
+    'SHORT': re.compile('^(\d{2})([01]\d)([0123]\d)([- _])'),
+    'COMPACT': re.compile('^(\d{4})([01]\d)([0123]\d)([- _])'),
+    'STANDARD': re.compile('^(\d{4})-([01]\d)-([0123]\d)([- _])'),
+    'MONTH': re.compile('^(\d{4})-([01]\d)(?!-[0123]\d)([- _])'),
+    'WITHTIME_AND_SECONDS': re.compile('^(\d{4})-([01]\d)-([0123]\d)([T :_-])([012]\d)([:.-])([012345]\d)([:.-])([012345]\d)([- _.])'),
+    'WITHTIME_NO_SECONDS':  re.compile('^(\d{4})-([01]\d)-([0123]\d)([T :_-])([012]\d)([:.-])([012345]\d)([- _.])'),
+    'WITHSECONDS': re.compile('^(\d{4})-([01]\d)-([0123]\d)([T :_-])([012]\d)([:.-])([012345]\d)([:.-])([012345]\d)([- _])'),
 }
 MAX_PATHLENGTH = 255  # os.pathconf('/', 'PC_PATH_MAX') may be longer but os.rename() seems to have hard-coded 256
 
@@ -99,7 +99,7 @@ parser.add_option("--delimiter", dest="delimiter", metavar='DELIMITER_STRING',
                   'space, or underscore may result in not recognizing the delimiter ' +
                   'for further operations such as fixing slightly wrong formatted time-stamps.')
 parser.add_option("--nocorrections", dest="nocorrections", action="store_true",
-                  help="do not convert existing but slightely wrong formatted date/time-stamps to new format")
+                  help="do not convert existing but slightly wrong formatted date/time-stamps to new format")
 parser.add_option("-q", "--quiet", dest="quiet", action="store_true",
                   help="do not output anything but just errors on console")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
