@@ -4,7 +4,7 @@
 # author:  nbehrnd@yahoo.com
 # license: GPL v3, 2021.
 # date:    2021-08-30 (YYYY-MM-DD)
-# edit:    2021-09-29 (YYYY-MM-DD)
+# edit:    2021-11-25 (YYYY-MM-DD)
 #
 """Test pad for functions by date2name with pytest.
 
@@ -86,15 +86,6 @@ def test_create_remove_testfolder(name=TFOLDER):
 def test_script_existence():
     """Merely check for the script's presence."""
     assert os.path.isfile(PROGRAM)
-
-
-@pytest.mark.elementary    
-def test_script_version():
-    """Check for the correct output of the version.
-
-    CLI equivalence: date2name --version """
-    out = getoutput(f"python3 {PROGRAM} --version")
-    assert out.strip() == "__init__.py 2018-05-09"
 
 @pytest.mark.files
 @pytest.mark.default
