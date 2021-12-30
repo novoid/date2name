@@ -4,7 +4,7 @@
 # author:  nbehrnd@yahoo.com
 # license: GPL v3, 2021.
 # date:    2021-08-30 (YYYY-MM-DD)
-# edit:    2021-11-25 (YYYY-MM-DD)
+# edit:    2021-12-30 (YYYY-MM-DD)
 #
 """Test pad for functions by date2name with pytest.
 
@@ -73,7 +73,7 @@ def test_create_remove_testfile(name=TFILE):
     assert os.path.isfile(name) is False
 
 
-@pytest.mark.elementary    
+@pytest.mark.elementary
 def test_create_remove_testfolder(name=TFOLDER):
     """Probe the generation/removal of a test folder."""
     prepare_testfolder(name=TFOLDER)

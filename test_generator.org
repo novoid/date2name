@@ -1,6 +1,6 @@
 #+NAME:    test_generator.org
 #+AUTHOR:  nbehrnd@yahoo.com
-#+DATE:    2021-11-25 (YYYY-MM-DD)
+#+DATE:    2021-12-30 (YYYY-MM-DD)
 # License: GPL3, 2021.
 
 #+PROPERTY: header-args :tangle yes
@@ -21,12 +21,6 @@
   It is advantageous to retain the options to run =pytest= in a =Makefile=,
   which equally is included in this development e.g. to retain if an
   instruction like =pytest -xv= or =pytest-3 -xv= is necessary (/vide infra/).
-
-* Dependencies
-
-  The testing script is set up with Python 3.9.7 in mind.  Thus, to run the
-  tests successfully, you need a working installation of Python 3 with pytest
-  for Python 3.
 
 * Deployment
 
@@ -59,28 +53,28 @@
    (bookworm), branch testing.
 
     #+BEGIN_SRC makefile :tangle Makefile
-      # GNU Make file for the automation of pytest for date2name.
-      #
-      # While the test script is written for Python 3.9.2, you might need to
-      # adjust the following instruction once in case your OS includes pytest
-      # for legacy Python 2 side by side to Python 3, or only hosts pytest
-      # for Python 3.  The tests in script test_date2name.py are set up to
-      # work with pytest for Python 3; dependent on your installation, which
-      # may be named pytest-3, or (again) pytest.
-      #
-      # Put this file like test_date2name.py in the root folder of date2name
-      # fetched from PyPi or GitHub.  Then run
-      #
-      # chmod +x *
-      # make ./Makefile
-      #
-      # to run the tests.  The test sequence will explicitly report if a test
-      # was passed successfully, or failed.  If you want to script to stop on
-      # the first encounter of a test failed, add option -x on the commands
-      # set below
-      
-      # pytest -v test_date2name.py     # only pytest for Python 3 is present
-      pytest-3 -v test_date2name.py   # pytest if Python 2 and Python 3 coexist
+# GNU Make file for the automation of pytest for date2name.
+#
+# While the test script is written for Python 3.9.2, you might need to
+# adjust the following instruction once in case your OS includes pytest
+# for legacy Python 2 side by side to Python 3, or only hosts pytest
+# for Python 3.  The tests in script test_date2name.py are set up to
+# work with pytest for Python 3; dependent on your installation, which
+# may be named pytest-3, or (again) pytest.
+#
+# Put this file like test_date2name.py in the root folder of date2name
+# fetched from PyPi or GitHub.  Then run
+#
+# chmod +x *
+# make ./Makefile
+#
+# to run the tests.  The test sequence will explicitly report if a test
+# was passed successfully, or failed.  If you want to script to stop on
+# the first encounter of a test failed, add option -x on the commands
+# set below
+
+# pytest -v test_date2name.py     # only pytest for Python 3 is present
+pytest-3 -v test_date2name.py   # pytest if Python 2 and Python 3 coexist
     #+end_src
 
 ** Building a pytest.ini
@@ -89,9 +83,11 @@
    tests with pytest may focus on them rather than performing all tests (which
    is set up as the default).  In presence of =pytest.ini=, the typical call
    then is
+
    #+begin_src bash  :tangle no
-     pytest-3 test_date2name.py -v -m "elementary"
+pytest-3 test_date2name.py -v -m "elementary"
    #+end_src
+
    to constrain the tester's action to all tests labeled as "elementary".  At
    present, tests are grouped as
    + elementary; ahead of checking date2name's action on files or folders
@@ -101,69 +97,69 @@
    =default=, =compact=, =month=, =withtime=, or =short=) and the stamps'
    retraction (keyword =remove=) may be used as mutually exclusive levels,
    either alone, or in combination with the keyword =files= or =folders=, e.g.
-   
+
    #+begin_src bash :tangle no
-     pytest-3 test_date2name.py -m "files and default" -v
+pytest-3 test_date2name.py -m "files and default" -v
    #+end_src
-     
+
    This became necessary since a reliable approach to stack the levels "files"
    and "folders" in this testing suite was not yet identified.
-     
+
 
    #+begin_src python :tangle pytest.ini
-     [pytest]
-     markers =
-         elementary:  elementary tests ahead of action on files/folders by date2name
-         files:       tests about affect by date2name on files
-         folders:     tests about affect by date2name on folders
-     
-         default:     stamp pattern default, YYYY-MM-DD
-         compact:     stamp pattern compact, YYYYMMDD
-         month:       stamp pattern month, YYYY-MM
-         short:       stamp pattern short, YYMMDD
-         withtime:    stamp pattern withtime, YYYY-MM-DDThh.mm.ss
-         remove:      stamp retraction
+[pytest]
+markers =
+    elementary:  elementary tests ahead of action on files/folders by date2name
+    files:       tests about affect by date2name on files
+    folders:     tests about affect by date2name on folders
+
+    default:     stamp pattern default, YYYY-MM-DD
+    compact:     stamp pattern compact, YYYYMMDD
+    month:       stamp pattern month, YYYY-MM
+    short:       stamp pattern short, YYMMDD
+    withtime:    stamp pattern withtime, YYYY-MM-DDThh.mm.ss
+    remove:      stamp retraction
    #+end_src
 
 ** Building the test script
 
 *** header section
     #+BEGIN_SRC python :tangle test_date2name.py
-      #!/bin/usr/env python3
-      
-      # name:    test_date2name.py
-      # author:  nbehrnd@yahoo.com
-      # license: GPL v3, 2021.
-      # date:    2021-08-30 (YYYY-MM-DD)
-      # edit:    2021-11-25 (YYYY-MM-DD)
-      #
-      """Test pad for functions by date2name with pytest.
-      
-      Written for Python 3.9.2 and pytest 6.2.4 for Python 3 as provided by
-      Linux Debian 12/bookworm, branch testing, this is a programmatic check
-      of functions offered by date2name.  Deposit this script in the root of
-      the folder fetched and unzipped from PyPi or GitHub.  If your system
-      includes both legacy Python 2 and Python 3, pytest for Python 3 likely
-      is named pytest-3; otherwise only pytest.  Thus, adjust your input on
-      the CLI accordingly when running either one of
-      
-      pytest -xv test_date2name.py
-      pytest-3 -xv test_date2name.py
-      
-      The script either stops when one of the tests fail, or after completion
-      of the test sequence.  In both cases, the progress of the ongoing tests
-      is reported to the CLI."""
-      import os
-      import time
-      
-      from datetime import datetime
-      from subprocess import getstatusoutput, getoutput
-      
-      import pytest
-      
-      PROGRAM = str("./date2name/__init__.py")
-      TFILE = str("test_file.txt")  # the intermediate test file written
-      TFOLDER = str("test_folder")  # for complementary check on folders
+#!/bin/usr/env python3
+
+# name:    test_date2name.py
+# author:  nbehrnd@yahoo.com
+# license: GPL v3, 2021.
+# date:    2021-08-30 (YYYY-MM-DD)
+# edit:    2021-12-30 (YYYY-MM-DD)
+#
+"""Test pad for functions by date2name with pytest.
+
+Written for Python 3.9.2 and pytest 6.2.4 for Python 3 as provided by
+Linux Debian 12/bookworm, branch testing, this is a programmatic check
+of functions offered by date2name.  Deposit this script in the root of
+the folder fetched and unzipped from PyPi or GitHub.  If your system
+includes both legacy Python 2 and Python 3, pytest for Python 3 likely
+is named pytest-3; otherwise only pytest.  Thus, adjust your input on
+the CLI accordingly when running either one of
+
+pytest -xv test_date2name.py
+pytest-3 -xv test_date2name.py
+
+The script either stops when one of the tests fail, or after completion
+of the test sequence.  In both cases, the progress of the ongoing tests
+is reported to the CLI."""
+import os
+import time
+
+from datetime import datetime
+from subprocess import getstatusoutput, getoutput
+
+import pytest
+
+PROGRAM = str("./date2name/__init__.py")
+TFILE = str("test_file.txt")  # the intermediate test file written
+TFOLDER = str("test_folder")  # for complementary check on folders
     #+end_src
 
 
@@ -172,35 +168,35 @@
     Define actions which are going to be used multiple times.
 
     #+begin_src python :tangle test_date2name.py
-      def prepare_testfile(name=TFILE):
-          """The creation of the test file."""
-          with open (name, mode="w") as newfile:
-              newfile.write("This is the test file for test_date2name.py.")
-          # adjust modification time stamp, based on
-          # https://stackoverflow.com/questions/53111614/how-to-modify-the-file-modification-date-with-python-on-mac
-          result = os.stat(name)
-          os.utime(name, (result.st_atime, result.st_mtime + 10.0))
-      
-      
-      def prepare_testfolder(name=TFOLDER):
-          """Create a test folder."""
-          os.mkdir(name)
-          result = os.stat(name)
-          os.utime(name, (result.st_atime, result.st_mtime + 10.0))
-          
-      
-      def query_creation_time(name=TFILE):
-          """Determine the time of creation of the file/folder."""
-          created = os.stat(name).st_ctime
-          created = str(datetime.fromtimestamp(created))
-          return created
-      
-      
-      def query_modification_time(name=TFILE):
-          """Determine the time when the file/folder was modified."""
-          modified = os.stat(name).st_mtime
-          modified = str(datetime.fromtimestamp(modified))
-          return modified
+def prepare_testfile(name=TFILE):
+    """The creation of the test file."""
+    with open (name, mode="w") as newfile:
+        newfile.write("This is the test file for test_date2name.py.")
+    # adjust modification time stamp, based on
+    # https://stackoverflow.com/questions/53111614/how-to-modify-the-file-modification-date-with-python-on-mac
+    result = os.stat(name)
+    os.utime(name, (result.st_atime, result.st_mtime + 10.0))
+
+
+def prepare_testfolder(name=TFOLDER):
+    """Create a test folder."""
+    os.mkdir(name)
+    result = os.stat(name)
+    os.utime(name, (result.st_atime, result.st_mtime + 10.0))
+
+
+def query_creation_time(name=TFILE):
+    """Determine the time of creation of the file/folder."""
+    created = os.stat(name).st_ctime
+    created = str(datetime.fromtimestamp(created))
+    return created
+
+
+def query_modification_time(name=TFILE):
+    """Determine the time when the file/folder was modified."""
+    modified = os.stat(name).st_mtime
+    modified = str(datetime.fromtimestamp(modified))
+    return modified
     #+end_src
 
 
@@ -209,28 +205,28 @@
     These tests do not modify a file, nor folder by =date2time=.
 
     #+begin_src python :tangle test_date2name.py
-      @pytest.mark.elementary
-      def test_create_remove_testfile(name=TFILE):
-	  """Merely check if the test file may be written and removed."""
-	  prepare_testfile(name=TFILE)
-	  assert os.path.isfile(name)
-	  os.remove(name)
-	  assert os.path.isfile(name) is False
-      
-      
-      @pytest.mark.elementary    
-      def test_create_remove_testfolder(name=TFOLDER):
-	  """Probe the generation/removal of a test folder."""
-	  prepare_testfolder(name=TFOLDER)
-	  assert os.path.isdir(name)
-	  os.rmdir(name)
-	  assert os.path.isdir(name) is False
-      
-      
-      @pytest.mark.elementary
-      def test_script_existence():
-	  """Merely check for the script's presence."""
-	  assert os.path.isfile(PROGRAM)
+@pytest.mark.elementary
+def test_create_remove_testfile(name=TFILE):
+    """Merely check if the test file may be written and removed."""
+    prepare_testfile(name=TFILE)
+    assert os.path.isfile(name)
+    os.remove(name)
+    assert os.path.isfile(name) is False
+
+
+@pytest.mark.elementary
+def test_create_remove_testfolder(name=TFOLDER):
+    """Probe the generation/removal of a test folder."""
+    prepare_testfolder(name=TFOLDER)
+    assert os.path.isdir(name)
+    os.rmdir(name)
+    assert os.path.isdir(name) is False
+
+
+@pytest.mark.elementary
+def test_script_existence():
+    """Merely check for the script's presence."""
+    assert os.path.isfile(PROGRAM)
     #+end_src
 
 
@@ -240,185 +236,185 @@
 
     + [X] default pattern, i.e. prepend YYYY-MM-DD_ to file test.txt
       #+begin_src python :tangle test_date2name.py
-        @pytest.mark.files
-        @pytest.mark.default
-        @pytest.mark.parametrize("arg1", [" ", "-f", "--files",
-                                          "-m", "--mtime",
-                                          "-c", "--ctime"])
-        def test_file_pattern_default(arg1):
-            """Prepend 'YYYY-MM-DD_' to the file name."""
-            prepare_testfile()
-            day = str("")
-            new = str("")
-        
-            if arg1 in [" ", "-f", "--files", "-m", "--mtime"]:
-                day = query_modification_time().split()[0]
-        
-            elif arg1 in ["-c", "--ctime"]:
-                day = query_creation_time().split()[0]
-        
-            new = "_".join([day, TFILE])
-            test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
-            assert os.path.isfile(new)
-            os.remove(new)
+@pytest.mark.files
+@pytest.mark.default
+@pytest.mark.parametrize("arg1", [" ", "-f", "--files",
+                                  "-m", "--mtime",
+                                  "-c", "--ctime"])
+def test_file_pattern_default(arg1):
+    """Prepend 'YYYY-MM-DD_' to the file name."""
+    prepare_testfile()
+    day = str("")
+    new = str("")
+
+    if arg1 in [" ", "-f", "--files", "-m", "--mtime"]:
+        day = query_modification_time().split()[0]
+
+    elif arg1 in ["-c", "--ctime"]:
+        day = query_creation_time().split()[0]
+
+    new = "_".join([day, TFILE])
+    test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
+    assert os.path.isfile(new)
+    os.remove(new)
       #+end_src
 
     + [X] compact pattern, i.e. prepend YYYYMMDD_ to file test.txt.  This may
       re-use much of the instructions used for the default pattern and only
       needs to drop the hyphens.
       #+begin_src python :tangle test_date2name.py
-        @pytest.mark.files
-        @pytest.mark.compact
-        @pytest.mark.parametrize("arg1", ["-C", "--compact",
-                                          "-C -f", "--compact -f",
-                                          "-C --files", "--compact --files",
-                                          "-C -m", "--compact -m",
-                                          "-C --mtime", "--compact --mtime",
-                                          "-C -c", "--compact -c",
-                                          "-C --ctime", "--compact --ctime"])
-        def test_file_pattern_compact(arg1):
-            """Prepend 'YYYYMMDD_' to the file name."""
-            prepare_testfile()
-            day = str("")
-            new = str("")
-        
-            if arg1 in ["-C", "--compact",
-                        "-C -f", "--compact -f",
-                        "-C --files", "--compact --files",
-                        "-C -m", "--compact -m",
-                        "-C --mtime", "--compact --mtime"]:
-                day = query_modification_time().split()[0]
-        
-            elif arg1 in ["-C -c", "--compact -c",
-                          "-C --ctime", "--compact --ctime"]:
-                day = query_creation_time().split()[0]
-        
-            # drop the hyphens in the date stamp:
-            day = day.replace("-", "")
-        
-            new = "_".join([day, TFILE])
-            test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
-            assert os.path.isfile(new)
-            os.remove(new)
+@pytest.mark.files
+@pytest.mark.compact
+@pytest.mark.parametrize("arg1", ["-C", "--compact",
+                                  "-C -f", "--compact -f",
+                                  "-C --files", "--compact --files",
+                                  "-C -m", "--compact -m",
+                                  "-C --mtime", "--compact --mtime",
+                                  "-C -c", "--compact -c",
+                                  "-C --ctime", "--compact --ctime"])
+def test_file_pattern_compact(arg1):
+    """Prepend 'YYYYMMDD_' to the file name."""
+    prepare_testfile()
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-C", "--compact",
+                "-C -f", "--compact -f",
+                "-C --files", "--compact --files",
+                "-C -m", "--compact -m",
+                "-C --mtime", "--compact --mtime"]:
+        day = query_modification_time().split()[0]
+
+    elif arg1 in ["-C -c", "--compact -c",
+                  "-C --ctime", "--compact --ctime"]:
+        day = query_creation_time().split()[0]
+
+    # drop the hyphens in the date stamp:
+    day = day.replace("-", "")
+
+    new = "_".join([day, TFILE])
+    test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
+    assert os.path.isfile(new)
+    os.remove(new)
       #+end_src
 
     + [X] month pattern, i.e. prepend YYYY-MM_ to file test.txt.
       Departing from the standard format YYYY-MM-DD, it suffices to trim
       off the last three characters.
       #+begin_src python :tangle test_date2name.py
-        @pytest.mark.files
-        @pytest.mark.month
-        @pytest.mark.parametrize("arg1", ["-M", "--month",
-                                          "-M -f", "--month -f",
-                                          "-M --files", "--month --files",
-                                          "-M -m", "--month -m",
-                                          "-M --mtime", "--month --mtime",
-                                          "-M -c", "--month -c",
-                                          "-M --ctime", "--month --ctime"])
-        def test_file_pattern_month(arg1):
-            """Prepend 'YYYY-MM_' to the file name."""
-            prepare_testfile()
-            day = str("")
-            new = str("")
-        
-            if arg1 in ["-M", "--month",
-                        "-M -f", "--month -f",
-                        "-M --files", "--month --files",
-                        "-M -m", "--month -m",
-                        "-M --mtime", "--month --mtime"]:
-                day = query_modification_time().split()[0]
-        
-            elif arg1 in ["-M -c", "--month -c",
-                          "-M --ctime", "--month --ctime"]:
-                day = query_creation_time().split()[0]
-        
-            # trim off the last three characters in the date stamp:
-            day = day[:-3]
-        
-            new = "_".join([day, TFILE])
-            test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
-            assert os.path.isfile(new)
-            os.remove(new)
+@pytest.mark.files
+@pytest.mark.month
+@pytest.mark.parametrize("arg1", ["-M", "--month",
+                                  "-M -f", "--month -f",
+                                  "-M --files", "--month --files",
+                                  "-M -m", "--month -m",
+                                  "-M --mtime", "--month --mtime",
+                                  "-M -c", "--month -c",
+                                  "-M --ctime", "--month --ctime"])
+def test_file_pattern_month(arg1):
+    """Prepend 'YYYY-MM_' to the file name."""
+    prepare_testfile()
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-M", "--month",
+                "-M -f", "--month -f",
+                "-M --files", "--month --files",
+                "-M -m", "--month -m",
+                "-M --mtime", "--month --mtime"]:
+        day = query_modification_time().split()[0]
+
+    elif arg1 in ["-M -c", "--month -c",
+                  "-M --ctime", "--month --ctime"]:
+        day = query_creation_time().split()[0]
+
+    # trim off the last three characters in the date stamp:
+    day = day[:-3]
+
+    new = "_".join([day, TFILE])
+    test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
+    assert os.path.isfile(new)
+    os.remove(new)
       #+end_src
 
     + [X] short pattern, i.e. prepend YYMMDD_ to file test.txt.  A feature by
       Reiner Rottmann.  Related to the basic pattern, except the two first
       characters are truncated.
       #+begin_src python :tangle test_date2name.py
-        @pytest.mark.files
-        @pytest.mark.short
-        @pytest.mark.parametrize("arg1", ["-S", "--short",
-                                          "-S -f", "--short -f",
-                                          "-S --files", "--short --files",
-                                          "-S -m", "--short -m",
-                                          "-S --mtime", "--short --mtime",
-                                          "-S -c", "--short -c",
-                                          "-S --ctime", "--short --ctime"])
-        def test_file_pattern_short(arg1):
-            """Prepend 'YYMMDD_' to the file name."""
-            prepare_testfile()
-            day = str("")
-            new = str("")
-        
-            if arg1 in ["-S", "--short",
-                        "-S -f", "--short -f",
-                        "-S --files", "--short --files",
-                        "-S -m", "--short -m",
-                        "-S --mtime", "--short --mtime"]:
-                day = query_modification_time().split()[0]
-        
-            elif arg1 in ["-S -c", "--short -c",
-                          "-S --ctime", "--short --ctime"]:
-                day = query_creation_time().split()[0]
-        
-            # drop the hyphens in the date stamp:
-            day = day.replace("-", "")
-            # drop the first two characters about the year (e.g., 1789 -> 89)
-            day = day[2:]
-        
-            new = "_".join([day, TFILE])
-            test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
-            assert os.path.isfile(new)
-            os.remove(new)
+@pytest.mark.files
+@pytest.mark.short
+@pytest.mark.parametrize("arg1", ["-S", "--short",
+                                  "-S -f", "--short -f",
+                                  "-S --files", "--short --files",
+                                  "-S -m", "--short -m",
+                                  "-S --mtime", "--short --mtime",
+                                  "-S -c", "--short -c",
+                                  "-S --ctime", "--short --ctime"])
+def test_file_pattern_short(arg1):
+    """Prepend 'YYMMDD_' to the file name."""
+    prepare_testfile()
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-S", "--short",
+                "-S -f", "--short -f",
+                "-S --files", "--short --files",
+                "-S -m", "--short -m",
+                "-S --mtime", "--short --mtime"]:
+        day = query_modification_time().split()[0]
+
+    elif arg1 in ["-S -c", "--short -c",
+                  "-S --ctime", "--short --ctime"]:
+        day = query_creation_time().split()[0]
+
+    # drop the hyphens in the date stamp:
+    day = day.replace("-", "")
+    # drop the first two characters about the year (e.g., 1789 -> 89)
+    day = day[2:]
+
+    new = "_".join([day, TFILE])
+    test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
+    assert os.path.isfile(new)
+    os.remove(new)
       #+end_src
 
     + [X] withtime pattern, i.e. prepend YYYY-MM-DDThh.mm.ss_ to file test.txt.
       This extends the default pattern YYYY-MM-DD.
       #+begin_src python :tangle test_date2name.py
-        @pytest.mark.files
-        @pytest.mark.withtime
-        @pytest.mark.parametrize("arg1", ["-w -f", "-w --files",
-                                          "--withtime -f", "--withtime --files",
-                                          "-w -m", "-w --mtime",
-                                          "--withtime -m", "--withtime --mtime",
-                                          "-w -c", "-w --ctime",
-                                          "--withtime -c", "--withtime --ctime"])
-        def test_file_pattern_withtime(arg1):
-            """Prepend 'YYYY-MM-DDThh.mm.ss_' to the file name."""
-            prepare_testfile()
-            day = str("")
-            new = str("")
-        
-            if arg1 in ["-w -f", "-w --files",
-                        "--withtime -f", "--withtime --files",
-                        "-w -m", "-w --mtime",
-                        "--withtime -m", "--withtime --mtime"]:
-                day = query_modification_time().split()[0]
-                second = query_modification_time().split()[1]
-        
-            elif arg1 in ["-w -c", "-w --ctime",
-                          "--withtime -c", "--withtime --ctime"]:
-                day = query_creation_time().split()[0]
-                second = query_creation_time().split()[1]
-        
-            second = second.split(".")[0]  # use integer seconds only
-            second = second.replace(":", ".")  # adjust representation
-        
-            new = "".join([day, "T", second, "_", TFILE])
-        
-            test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
-            assert os.path.isfile(new)
-            os.remove(new)
+@pytest.mark.files
+@pytest.mark.withtime
+@pytest.mark.parametrize("arg1", ["-w -f", "-w --files",
+                                  "--withtime -f", "--withtime --files",
+                                  "-w -m", "-w --mtime",
+                                  "--withtime -m", "--withtime --mtime",
+                                  "-w -c", "-w --ctime",
+                                  "--withtime -c", "--withtime --ctime"])
+def test_file_pattern_withtime(arg1):
+    """Prepend 'YYYY-MM-DDThh.mm.ss_' to the file name."""
+    prepare_testfile()
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-w -f", "-w --files",
+                "--withtime -f", "--withtime --files",
+                "-w -m", "-w --mtime",
+                "--withtime -m", "--withtime --mtime"]:
+        day = query_modification_time().split()[0]
+        second = query_modification_time().split()[1]
+
+    elif arg1 in ["-w -c", "-w --ctime",
+                  "--withtime -c", "--withtime --ctime"]:
+        day = query_creation_time().split()[0]
+        second = query_creation_time().split()[1]
+
+    second = second.split(".")[0]  # use integer seconds only
+    second = second.replace(":", ".")  # adjust representation
+
+    new = "".join([day, "T", second, "_", TFILE])
+
+    test = getoutput(f"python3 {PROGRAM} {TFILE} {arg1}")
+    assert os.path.isfile(new)
+    os.remove(new)
       #+end_src
 
     + [X] Check the retraction of the date/time stamp on files.
@@ -430,34 +426,34 @@
       tests fail.
 
       #+begin_src python :tangle test_date2name.py
-        @pytest.mark.files
-        @pytest.mark.remove
-        @pytest.mark.parametrize("arg1", ["default",
-                                          "compact", "month", "short",
-                                          "withtime"])
-        @pytest.mark.parametrize("arg2", ["-r", "--remove"])
-        def test_file_remove_stamp(arg1, arg2):
-            """Check the retraction of the leading time stamp."""
-            substitution = {"default" : "2021-09-21",
-                            "compact" : "20210921",
-                            "month"   : "2021-09",
-                            "short"   : "210921",
-                            "withtime": "2021-09-21T13.59.59"}
-            prepend = substitution.get(arg1)
-        
-            BASIS = "test.txt"
-            TFILE = ""
-            TFILE = "_".join([prepend, BASIS])
-            with open(TFILE, mode = "w") as newfile:
-                newfile.write("This is a test file.")
-        
-            test = getoutput(f"python3 {PROGRAM} {TFILE} {arg2}")
-        
-            assert os.path.isfile(TFILE) is False  # absence of stamped file
-            assert os.path.isfile(BASIS)           # presence unstamped file
-        
-            os.remove("test.txt")  # successful space cleaning for next test
-            assert os.path.isfile("test.txt") is False
+@pytest.mark.files
+@pytest.mark.remove
+@pytest.mark.parametrize("arg1", ["default",
+                                  "compact", "month", "short",
+                                  "withtime"])
+@pytest.mark.parametrize("arg2", ["-r", "--remove"])
+def test_file_remove_stamp(arg1, arg2):
+    """Check the retraction of the leading time stamp."""
+    substitution = {"default" : "2021-09-21",
+                    "compact" : "20210921",
+                    "month"   : "2021-09",
+                    "short"   : "210921",
+                    "withtime": "2021-09-21T13.59.59"}
+    prepend = substitution.get(arg1)
+
+    BASIS = "test.txt"
+    TFILE = ""
+    TFILE = "_".join([prepend, BASIS])
+    with open(TFILE, mode = "w") as newfile:
+        newfile.write("This is a test file.")
+
+    test = getoutput(f"python3 {PROGRAM} {TFILE} {arg2}")
+
+    assert os.path.isfile(TFILE) is False  # absence of stamped file
+    assert os.path.isfile(BASIS)           # presence unstamped file
+
+    os.remove("test.txt")  # successful space cleaning for next test
+    assert os.path.isfile("test.txt") is False
       #+end_src
 
 *** perform the tests on folders [6/6]
@@ -470,231 +466,227 @@
 
     + [X] default pattern, YYYY-MM-DD_ prepended
       #+begin_src python :tangle test_date2name.py
-        @pytest.mark.folders
-        @pytest.mark.default
-        @pytest.mark.parametrize("arg1", [" ", "-d", "--directories",
-                                          "-m", "--mtime",
-                                          "-c", "--ctime"])
-        def test_folder_pattern_default(arg1, name=TFOLDER):
-            """Prepend 'YYYY-MM-DD_' to the folder name."""
-            prepare_testfolder(name)
-            day = str("")
-            new = str("")
-        
-            if arg1 in [" ", "-d", "--directories", "-m", "--mtime"]:
-                day = query_modification_time(name).split()[0]
-        
-            elif arg1 in ["-c", "--ctime"]:
-                day = query_creation_time(name).split()[0]
-        
-            new = "_".join([day, name])
-            test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
-            assert os.path.isdir(name) is False  # absence unstamped folder
-            assert os.path.isdir(new)            # presence stamped folder
-            os.rmdir(new)
-            assert os.path.isdir(new) is False   # space cleaning
+@pytest.mark.folders
+@pytest.mark.default
+@pytest.mark.parametrize("arg1", [" ", "-d", "--directories",
+                                  "-m", "--mtime",
+                                  "-c", "--ctime"])
+def test_folder_pattern_default(arg1, name=TFOLDER):
+    """Prepend 'YYYY-MM-DD_' to the folder name."""
+    prepare_testfolder(name)
+    day = str("")
+    new = str("")
+
+    if arg1 in [" ", "-d", "--directories", "-m", "--mtime"]:
+        day = query_modification_time(name).split()[0]
+
+    elif arg1 in ["-c", "--ctime"]:
+        day = query_creation_time(name).split()[0]
+
+    new = "_".join([day, name])
+    test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
+    assert os.path.isdir(name) is False  # absence unstamped folder
+    assert os.path.isdir(new)            # presence stamped folder
+    os.rmdir(new)
+    assert os.path.isdir(new) is False   # space cleaning
       #+end_src
-      
+
     + [X] compact pattern, YYYYMMDD_ prepended
       #+begin_src python :tangle test_date2name.py
-        @pytest.mark.folders
-        @pytest.mark.compact
-        @pytest.mark.parametrize("arg1", ["-C", "--compact",
-                                          "-C -d", "--compact -d",
-                                          "-C --directories", "--compact --directories",
-                                          "-C -m", "--compact -m",
-                                          "-C --mtime", "--compact --mtime",
-                                          "-C -c", "--compact -c",
-                                          "-C --ctime", "--compact --ctime"])
-        def test_folder_pattern_compact(arg1, name=TFOLDER):
-            """Prepend 'YYYYMMDD_' to the folder name."""
-            prepare_testfolder(name)
-            day = str("")
-            new = str("")
-        
-            if arg1 in ["-C", "--compact",
-                        "-C -d", "--compact -d",
-                        "-C --directories", "--compact --directories",
-                        "-C -m", "--compact -m",
-                        "-C --mtime", "--compact --mtime"]:
-                day = query_modification_time(name).split()[0]
-        
-            elif arg1 in ["-C -c", "--compact -c",
-                          "-C --ctime", "--compact --ctime"]:
-                day = query_creation_time(name).split()[0]
-        
-            # drop the hyphens in the date stamp:
-            day = day.replace("-", "")
-        
-            new = "_".join([day, name])
-            test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
-        
-            assert os.path.isdir(name) is False  # absence unstamped folder
-            assert os.path.isdir(new)            # presence stamped folder
-            os.rmdir(new)
-            assert os.path.isdir(new) is False   # space cleaning
+@pytest.mark.folders
+@pytest.mark.compact
+@pytest.mark.parametrize("arg1", ["-C", "--compact",
+                                  "-C -d", "--compact -d",
+                                  "-C --directories", "--compact --directories",
+                                  "-C -m", "--compact -m",
+                                  "-C --mtime", "--compact --mtime",
+                                  "-C -c", "--compact -c",
+                                  "-C --ctime", "--compact --ctime"])
+def test_folder_pattern_compact(arg1, name=TFOLDER):
+    """Prepend 'YYYYMMDD_' to the folder name."""
+    prepare_testfolder(name)
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-C", "--compact",
+                "-C -d", "--compact -d",
+                "-C --directories", "--compact --directories",
+                "-C -m", "--compact -m",
+                "-C --mtime", "--compact --mtime"]:
+        day = query_modification_time(name).split()[0]
+
+    elif arg1 in ["-C -c", "--compact -c",
+                  "-C --ctime", "--compact --ctime"]:
+        day = query_creation_time(name).split()[0]
+
+    # drop the hyphens in the date stamp:
+    day = day.replace("-", "")
+
+    new = "_".join([day, name])
+    test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
+
+    assert os.path.isdir(name) is False  # absence unstamped folder
+    assert os.path.isdir(new)            # presence stamped folder
+    os.rmdir(new)
+    assert os.path.isdir(new) is False   # space cleaning
       #+end_src
-      
+
     + [X] month pattern, YYYY-MM_ prepended
       #+begin_src python :tangle test_date2name.py
-        @pytest.mark.folders
-        @pytest.mark.month
-        @pytest.mark.parametrize("arg1", ["-M", "--month",
-                                          "-M -d", "--month -d",
-                                          "-M --directories", "--month --directories",
-                                          "-M -m", "--month -m",
-                                          "-M --mtime", "--month --mtime",
-                                          "-M -c", "--month -c",
-                                          "-M --ctime", "--month --ctime"])
-        def test_file_pattern_month(arg1, name=TFOLDER):
-            """Prepend 'YYYY-MM_' to the file name."""
-            prepare_testfolder(name)
-            day = str("")
-            new = str("")
-        
-            if arg1 in ["-M", "--month",
-                        "-M -d", "--month -d",
-                        "-M --directories", "--month --directories",
-                        "-M -m", "--month -m",
-                        "-M --mtime", "--month --mtime"]:
-                day = query_modification_time(name).split()[0]
-        
-            elif arg1 in ["-M -c", "--month -c",
-                          "-M --ctime", "--month --ctime"]:
-                day = query_creation_time(name).split()[0]
-        
-            # trim off the last three characters in the date stamp:
-            day = day[:-3]
-        
-            new = "_".join([day, name])
-            test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
-        
-            assert os.path.isdir(name) is False  # absence unstamped folder
-            assert os.path.isdir(new)            # presence stamped folder
-            os.rmdir(new)
-            assert os.path.isdir(new) is False   # space cleaning
+@pytest.mark.folders
+@pytest.mark.month
+@pytest.mark.parametrize("arg1", ["-M", "--month",
+                                  "-M -d", "--month -d",
+                                  "-M --directories", "--month --directories",
+                                  "-M -m", "--month -m",
+                                  "-M --mtime", "--month --mtime",
+                                  "-M -c", "--month -c",
+                                  "-M --ctime", "--month --ctime"])
+def test_file_pattern_month(arg1, name=TFOLDER):
+    """Prepend 'YYYY-MM_' to the file name."""
+    prepare_testfolder(name)
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-M", "--month",
+                "-M -d", "--month -d",
+                "-M --directories", "--month --directories",
+                "-M -m", "--month -m",
+                "-M --mtime", "--month --mtime"]:
+        day = query_modification_time(name).split()[0]
+
+    elif arg1 in ["-M -c", "--month -c",
+                  "-M --ctime", "--month --ctime"]:
+        day = query_creation_time(name).split()[0]
+
+    # trim off the last three characters in the date stamp:
+    day = day[:-3]
+
+    new = "_".join([day, name])
+    test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
+
+    assert os.path.isdir(name) is False  # absence unstamped folder
+    assert os.path.isdir(new)            # presence stamped folder
+    os.rmdir(new)
+    assert os.path.isdir(new) is False   # space cleaning
       #+end_src
-      
+
     + [X] short pattern, YYMMDD_ prepended
       #+begin_src python :tangle test_date2name.py
-        @pytest.mark.folders
-        @pytest.mark.short
-        @pytest.mark.parametrize("arg1", ["-S", "--short",
-                                          "-S -d", "--short -d",
-                                          "-S --directories", "--short --directories",
-                                          "-S -m", "--short -m",
-                                          "-S --mtime", "--short --mtime",
-                                          "-S -c", "--short -c",
-                                          "-S --ctime", "--short --ctime"])
-        def test_folder_pattern_short(arg1, name=TFOLDER):
-            """Prepend 'YYMMDD_' to the file name."""
-            prepare_testfolder(name)
-            day = str("")
-            new = str("")
-        
-            if arg1 in ["-S", "--short",
-                        "-S -d", "--short -d",
-                        "-S --directories", "--short --directories",
-                        "-S -m", "--short -m",
-                        "-S --mtime", "--short --mtime"]:
-                day = query_modification_time(name).split()[0]
-        
-            elif arg1 in ["-S -c", "--short -c",
-                          "-S --ctime", "--short --ctime"]:
-                day = query_creation_time(name).split()[0]
-        
-            # drop the hyphens in the date stamp:
-            day = day.replace("-", "")
-            # drop the first two characters about the year (e.g., 1789 -> 89)
-            day = day[2:]
-        
-            new = "_".join([day, name])
-            test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
-        
-            assert os.path.isdir(name) is False  # absence unstamped folder
-            assert os.path.isdir(new)            # presence stamped folder
-            os.rmdir(new)
-            assert os.path.isdir(new) is False   # space cleaning
+@pytest.mark.folders
+@pytest.mark.short
+@pytest.mark.parametrize("arg1", ["-S", "--short",
+                                  "-S -d", "--short -d",
+                                  "-S --directories", "--short --directories",
+                                  "-S -m", "--short -m",
+                                  "-S --mtime", "--short --mtime",
+                                  "-S -c", "--short -c",
+                                  "-S --ctime", "--short --ctime"])
+def test_folder_pattern_short(arg1, name=TFOLDER):
+    """Prepend 'YYMMDD_' to the file name."""
+    prepare_testfolder(name)
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-S", "--short",
+                "-S -d", "--short -d",
+                "-S --directories", "--short --directories",
+                "-S -m", "--short -m",
+                "-S --mtime", "--short --mtime"]:
+        day = query_modification_time(name).split()[0]
+
+    elif arg1 in ["-S -c", "--short -c",
+                  "-S --ctime", "--short --ctime"]:
+        day = query_creation_time(name).split()[0]
+
+    # drop the hyphens in the date stamp:
+    day = day.replace("-", "")
+    # drop the first two characters about the year (e.g., 1789 -> 89)
+    day = day[2:]
+
+    new = "_".join([day, name])
+    test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
+
+    assert os.path.isdir(name) is False  # absence unstamped folder
+    assert os.path.isdir(new)            # presence stamped folder
+    os.rmdir(new)
+    assert os.path.isdir(new) is False   # space cleaning
       #+end_src
-      
+
     + [X] withtime pattern, YYYY-MM-DDThh.mm.ss_ prepended
       #+begin_src python :tangle test_date2name.py
-        @pytest.mark.folders
-        @pytest.mark.withtime
-        @pytest.mark.parametrize("arg1", ["-w -d", "-w --directories",
-                                          "--withtime -d", "--withtime --directories",
-                                          "-w -m", "-w --mtime",
-                                          "--withtime -m", "--withtime --mtime",
-                                          "-w -c", "-w --ctime",
-                                          "--withtime -c", "--withtime --ctime"])
-        def test_file_pattern_withtime(arg1, name=TFOLDER):
-            """Prepend 'YYYY-MM-DDThh.mm.ss_' to the folder name."""
-            prepare_testfolder(name)
-            day = str("")
-            new = str("")
-        
-            if arg1 in ["-w -d", "-w --directories",
-                        "--withtime -d", "--withtime --directories",
-                        "-w -m", "-w --mtime",
-                        "--withtime -m", "--withtime --mtime"]:
-                day = query_modification_time(name).split()[0]
-                second = query_modification_time(name).split()[1]
-        
-            elif arg1 in ["-w -c", "-w --ctime",
-                          "--withtime -c", "--withtime --ctime"]:
-                day = query_creation_time(name).split()[0]
-                second = query_creation_time(name).split()[1]
-        
-            second = second.split(".")[0]  # use integer seconds only
-            second = second.replace(":", ".")  # adjust representation
-        
-            new = "".join([day, "T", second, "_", name])
-        
-            test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
-        
-            assert os.path.isdir(name) is False  # absence unstamped folder
-            assert os.path.isdir(new)            # presence stamped folder
-            os.rmdir(new)
-            assert os.path.isdir(new) is False   # space cleaning
+@pytest.mark.folders
+@pytest.mark.withtime
+@pytest.mark.parametrize("arg1", ["-w -d", "-w --directories",
+                                  "--withtime -d", "--withtime --directories",
+                                  "-w -m", "-w --mtime",
+                                  "--withtime -m", "--withtime --mtime",
+                                  "-w -c", "-w --ctime",
+                                  "--withtime -c", "--withtime --ctime"])
+def test_file_pattern_withtime(arg1, name=TFOLDER):
+    """Prepend 'YYYY-MM-DDThh.mm.ss_' to the folder name."""
+    prepare_testfolder(name)
+    day = str("")
+    new = str("")
+
+    if arg1 in ["-w -d", "-w --directories",
+                "--withtime -d", "--withtime --directories",
+                "-w -m", "-w --mtime",
+                "--withtime -m", "--withtime --mtime"]:
+        day = query_modification_time(name).split()[0]
+        second = query_modification_time(name).split()[1]
+
+    elif arg1 in ["-w -c", "-w --ctime",
+                  "--withtime -c", "--withtime --ctime"]:
+        day = query_creation_time(name).split()[0]
+        second = query_creation_time(name).split()[1]
+
+    second = second.split(".")[0]  # use integer seconds only
+    second = second.replace(":", ".")  # adjust representation
+
+    new = "".join([day, "T", second, "_", name])
+
+    test = getoutput(f"python3 {PROGRAM} {name} {arg1}")
+
+    assert os.path.isdir(name) is False  # absence unstamped folder
+    assert os.path.isdir(new)            # presence stamped folder
+    os.rmdir(new)
+    assert os.path.isdir(new) is False   # space cleaning
       #+end_src
-      
+
     + [X] retraction of the date/time stamp
 
       Similar to the retraction of a prepended time stamp on files, the two
       checks to remove a time stamp added by =--withtime= or =-w= currently fail
       when running =pytest-3= on Linux Debian 12/bookworm, branch testing.
-      
+
       #+begin_src python :tangle test_date2name.py
-        @pytest.mark.folders
-        @pytest.mark.remove
-        @pytest.mark.parametrize("arg1", ["default",
-                                          "compact", "month", "short",
-                                          "withtime"])
-        @pytest.mark.parametrize("arg2", ["-r", "--remove"])
-        def test_folder_remove_stamp(arg1, arg2, name=TFOLDER):
-            """Check the retraction of the leading time stamp."""
-            substitution = {"default" : "2021-09-21",
-                            "compact" : "20210921",
-                            "month"   : "2021-09",
-                            "short"   : "210921",
-                            "withtime": "2021-09-21T13.59.59"}
-            prepend = substitution.get(arg1)
-        
-            # os.mkdir(name)
-            BASIS = str(name)
-            stamped_folder = ""
-            stamped_folder = "_".join([prepend, BASIS])
-            os.mkdir(stamped_folder)
-            assert os.path.isdir(stamped_folder)  # presence stamped folder
-        
-            test = getoutput(f"python3 {PROGRAM} {stamped_folder} {arg2}")
-        
-            assert os.path.isdir(stamped_folder) is False
-            assert os.path.isdir(name)           # presence unstamped folder
-            os.rmdir(name)
-            assert os.path.isdir(name) is False  # space cleaning
+@pytest.mark.folders
+@pytest.mark.remove
+@pytest.mark.parametrize("arg1", ["default",
+                                  "compact", "month", "short",
+                                  "withtime"])
+@pytest.mark.parametrize("arg2", ["-r", "--remove"])
+def test_folder_remove_stamp(arg1, arg2, name=TFOLDER):
+    """Check the retraction of the leading time stamp."""
+    substitution = {"default" : "2021-09-21",
+                    "compact" : "20210921",
+                    "month"   : "2021-09",
+                    "short"   : "210921",
+                    "withtime": "2021-09-21T13.59.59"}
+    prepend = substitution.get(arg1)
+
+    # os.mkdir(name)
+    BASIS = str(name)
+    stamped_folder = ""
+    stamped_folder = "_".join([prepend, BASIS])
+    os.mkdir(stamped_folder)
+    assert os.path.isdir(stamped_folder)  # presence stamped folder
+
+    test = getoutput(f"python3 {PROGRAM} {stamped_folder} {arg2}")
+
+    assert os.path.isdir(stamped_folder) is False
+    assert os.path.isdir(name)           # presence unstamped folder
+    os.rmdir(name)
+    assert os.path.isdir(name) is False  # space cleaning
       #+end_src
-
-
-
-
