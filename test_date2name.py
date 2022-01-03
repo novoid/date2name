@@ -4,7 +4,7 @@
 # author:  nbehrnd@yahoo.com
 # license: GPL v3, 2021.
 # date:    2021-08-30 (YYYY-MM-DD)
-# edit:    2021-12-30 (YYYY-MM-DD)
+# edit:    2022-01-03 (YYYY-MM-DD)
 #
 """Test pad for functions by date2name with pytest.
 
@@ -16,12 +16,14 @@ includes both legacy Python 2 and Python 3, pytest for Python 3 likely
 is named pytest-3; otherwise only pytest.  Thus, adjust your input on
 the CLI accordingly when running either one of
 
-pytest -xv test_date2name.py
-pytest-3 -xv test_date2name.py
+pytest -v test_date2name.py
+pytest-3 -v test_date2name.py
 
-The script either stops when one of the tests fail, or after completion
-of the test sequence.  In both cases, the progress of the ongoing tests
-is reported to the CLI."""
+These instruction initiate a verbose testing (flag -v) reported back to the CLI.re will be a verbose report to the CLI The script either stops when one of the tests fail (flag -x), or after
+completion of the test sequence.  In both cases, the progress of the ongoing
+tests is reported to the CLI (flag -v).
+
+"""
 import os
 import time
 
@@ -467,7 +469,6 @@ def test_folder_remove_stamp(arg1, arg2, name=TFOLDER):
                     "withtime": "2021-09-21T13.59.59"}
     prepend = substitution.get(arg1)
 
-    # os.mkdir(name)
     BASIS = str(name)
     stamped_folder = ""
     stamped_folder = "_".join([prepend, BASIS])

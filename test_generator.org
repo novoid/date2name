@@ -1,6 +1,6 @@
 #+NAME:    test_generator.org
 #+AUTHOR:  nbehrnd@yahoo.com
-#+DATE:    2021-12-30 (YYYY-MM-DD)
+#+DATE:    2022-01-03 (YYYY-MM-DD)
 # License: GPL3, 2021.
 
 #+PROPERTY: header-args :tangle yes
@@ -8,19 +8,13 @@
 
 * Intent
 
-  The application =date2name= by Karl Voit /et al./ ([[https://github.com/novoid/date2name][source)]] prepends date stamps
-  to files and folders (YYYY-MM-DD, YYYYMMDD, YYYY-MM, and YYYY-MM-DDThh.mm.ss).
-  This Emacs .org file is used to prepare the automatic testing of the file
-  processing by [[https://docs.pytest.org/en/latest/][pytest]].
-
-  By the command =C-c C-v t=, this =.org= file may (re)generate the tangled test
-  script, file =test_date2name.py= as well as a dedicated =Makefile= to ease the
-  automated testing even further.  =pytest= is not part of the Python standard
-  library, but may be obtained easily e.g., from [[https://pypi.org/project/pytest/][PyPi]].
-
-  It is advantageous to retain the options to run =pytest= in a =Makefile=,
-  which equally is included in this development e.g. to retain if an
-  instruction like =pytest -xv= or =pytest-3 -xv= is necessary (/vide infra/).
+  The application =date2name= by Karl Voit /et al./ ([[https://github.com/novoid/date2name][source)]] prepends date
+  stamps to files and folders (e.g., rename file =example.txt= to
+  =2021-12-30_example.txt=).  By the command =C-c C-v t=, Emacs may use the
+  present =.org= file to (re)generate a tangled test script, file
+  =test_date2name.py= for a programmatic testing by [[https://docs.pytest.org/en/latest/][pytest]].  (Though =pytest= is
+  not part of the Python standard library, it may be obtained easily e.g., from
+  [[https://pypi.org/project/pytest/][PyPi]].)  Optionally, the testing may be run by the equally tangled =Makefile=.
 
 * Deployment
 
@@ -28,29 +22,82 @@
   tests is either one of the following instructions (you might need to add the
   executable bit):
 
+  #+begin_src bash :tangle no
   python pytest -v test_date2name.py
   ./Makefile
+  #+end_src
 
   In case the computer you use equally includes an installation of legacy
   Python 2 side-by-side to Python 3, you must explicitly call for the later
   branch of the two.  Depending on your OS, this requires an adjustment of the
-  command issue.  In Linux Debian 12/bookworm, branch testing, for example,
+  command issued.  In Linux Debian 12/bookworm, branch testing, for example,
 
+  #+begin_src bash :tangle no
   python3 pytest-3 -v test_date2name.py
+  #+end_src
 
-  or, after adjustment of the =Makefile= and provision of the executable bit
+* Setup of Emacs
 
-  ./Makefile
+  The edit of this =.org= file in Emacs and the subsequent export (tangle) of
+  the files are affected by Emacs' own parameters (e.g., the indentation in
+  Python).  It is recommended to access this file with Emacs in a session
+  started by =emacs -q test_generator.org &= and to evaluate the following block
+  by =C-c C-c=; this explicitly adjusts a few basic settings, but does not
+  permanently overwrite an already existing personalized Emacs configuration.
 
-  See section about building a =pytest.ini= for additional options prepared.
+  Most of these instructions are elements of Hendrik Suenkler's annotated Emacs
+  configuration ([[https://www.suenkler.info/notes/emacs-config/][blog post]]) which are reused with his permission.
 
+  #+begin_src emacs-lisp :tangle no
+;; support these languages at all:
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (org . t)
+   (shell . t)
+   (python . t)))
+
+;; enable syntax highlighting:
+(setq org-src-fontify-natively t)
+
+;; adjust indentations, set tabs as explicit 4 spaces:
+(setq-default indent-tabs-mode nil)
+(setq default-tab-width 4)
+
+(setq custom-tab-width 4)
+(setq-default python-indent-offset custom-tab-width)
+
+(setq org-edit-src-content-indentation 0)
+(setq org-src-tab-acts-natively t)
+(setq org-src-preserve-indentation t)
+
+;; some comfort functions Suenkler mentions:
+(delete-selection-mode 1)
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+(show-paren-mode 1)
+(setq show-paren-style 'parenthesis)
+
+(column-number-mode nil)
+
+(setq org-src-fontify-natively t)
+  #+end_src
+
+  #+RESULTS:
+  : t
+
+  If the previous block was evaluated as .TRUE. (=t=), test script and
+  Makefile may be tangled right now by =C-c C-t v=.  After closing
+  this =.org= file, deploy them as indicated earlier.
 
 * Building the tests
 
 ** Building of the Makefile
 
-   Set up for GNU Make 4.3, as provided from the repositories of Linux Debian 12
-   (bookworm), branch testing.
+   The setup is for GNU Make 4.3 as provided e.g., by Linux Debian 12
+   (bookworm), branch testing.  Note, the Makefile tangled is a mere convenient
+   moderator for =test_date2name.py=; the eventual testing of date2name's action
+   does not depend on this Makefile.
 
     #+BEGIN_SRC makefile :tangle Makefile
 # GNU Make file for the automation of pytest for date2name.
@@ -68,10 +115,9 @@
 # chmod +x *
 # make ./Makefile
 #
-# to run the tests.  The test sequence will explicitly report if a test
-# was passed successfully, or failed.  If you want to script to stop on
-# the first encounter of a test failed, add option -x on the commands
-# set below
+# to run the tests.  If you want pytest to exit the test sequence
+# right after the first test failing, use the -x flag to the
+# instructions on the CLI in addition to the verbosity flag to (-v).
 
 # pytest -v test_date2name.py     # only pytest for Python 3 is present
 pytest-3 -v test_date2name.py   # pytest if Python 2 and Python 3 coexist
@@ -79,23 +125,22 @@ pytest-3 -v test_date2name.py   # pytest if Python 2 and Python 3 coexist
 
 ** Building a pytest.ini
 
-   This file defines markers which groups the tests into groups.  Subsequently,
-   tests with pytest may focus on them rather than performing all tests (which
-   is set up as the default).  In presence of =pytest.ini=, the typical call
-   then is
+   This file defines markers to assign tests into groups.  This allows to run
+   =pytest= on a subset rather than all tests (which is set up as the default).
+   E.g., in presence of =pytest.ini=, a call like
 
    #+begin_src bash  :tangle no
 pytest-3 test_date2name.py -v -m "elementary"
    #+end_src
 
-   to constrain the tester's action to all tests labeled as "elementary".  At
+   constrains the tester's action to all tests labeled as "elementary".  At
    present, tests are grouped as
    + elementary; ahead of checking date2name's action on files or folders
    + files; checking date2name's action on files, and
-   + folders; checking date2name's action on folders.
+   + folders; checking date2name's action on folders
    in a first layer.  Orthogonal to this, the five fixed pattern (keyword
    =default=, =compact=, =month=, =withtime=, or =short=) and the stamps'
-   retraction (keyword =remove=) may be used as mutually exclusive levels,
+   retraction (keyword =remove=) may be used as mutually exclusive levels --
    either alone, or in combination with the keyword =files= or =folders=, e.g.
 
    #+begin_src bash :tangle no
@@ -131,7 +176,7 @@ markers =
 # author:  nbehrnd@yahoo.com
 # license: GPL v3, 2021.
 # date:    2021-08-30 (YYYY-MM-DD)
-# edit:    2021-12-30 (YYYY-MM-DD)
+# edit:    2022-01-03 (YYYY-MM-DD)
 #
 """Test pad for functions by date2name with pytest.
 
@@ -143,12 +188,14 @@ includes both legacy Python 2 and Python 3, pytest for Python 3 likely
 is named pytest-3; otherwise only pytest.  Thus, adjust your input on
 the CLI accordingly when running either one of
 
-pytest -xv test_date2name.py
-pytest-3 -xv test_date2name.py
+pytest -v test_date2name.py
+pytest-3 -v test_date2name.py
 
-The script either stops when one of the tests fail, or after completion
-of the test sequence.  In both cases, the progress of the ongoing tests
-is reported to the CLI."""
+These instruction initiate a verbose testing (flag -v) reported back to the CLI.re will be a verbose report to the CLI The script either stops when one of the tests fail (flag -x), or after
+completion of the test sequence.  In both cases, the progress of the ongoing
+tests is reported to the CLI (flag -v).
+
+"""
 import os
 import time
 
@@ -202,7 +249,7 @@ def query_modification_time(name=TFILE):
 
 *** set up very elementary tests
 
-    These tests do not modify a file, nor folder by =date2time=.
+    These tests do not yet modify a file, nor folder which already exist.
 
     #+begin_src python :tangle test_date2name.py
 @pytest.mark.elementary
@@ -337,9 +384,9 @@ def test_file_pattern_month(arg1):
     os.remove(new)
       #+end_src
 
-    + [X] short pattern, i.e. prepend YYMMDD_ to file test.txt.  A feature by
-      Reiner Rottmann.  Related to the basic pattern, except the two first
-      characters are truncated.
+    + [X] short pattern, i.e. prepend YYMMDD_ to file test.txt.  A feature
+      introduced to date2name by Reiner Rottmann.  Related to the basic pattern,
+      except the two first characters are truncated.
       #+begin_src python :tangle test_date2name.py
 @pytest.mark.files
 @pytest.mark.short
@@ -420,10 +467,7 @@ def test_file_pattern_withtime(arg1):
     + [X] Check the retraction of the date/time stamp on files.
 
       Based on a pattern comparison, a file like =20210921_test.txt= is renamed
-      =test.txt=.  At present (Linux Debian 12/bookworm, branch testing),
-      date2name is known to struggle for files with the tag date2time prepended
-      by parameter =--withtime= (or =-w=).  This is why the two corresponding
-      tests fail.
+      =test.txt=.
 
       #+begin_src python :tangle test_date2name.py
 @pytest.mark.files
@@ -459,10 +503,10 @@ def test_file_remove_stamp(arg1, arg2):
 *** perform the tests on folders [6/6]
 
     At present, most of the instructions already defined and used in section
-    "test on files" is repeated with small adjustments for checking date2name's
-    action on folders.  While this approach isn't dry, given current experience,
-    it however is more reliable in eventual code execution running pytest, than
-    stacking the files/folders levels as an additional parameter.
+    "test on files" are repeated with small adjustments for checking date2name's
+    action on folders.  This approach isn't dry; though, given current
+    experience, it however is more reliable in eventual code execution running
+    pytest, than stacking the files/folders levels as an additional parameter.
 
     + [X] default pattern, YYYY-MM-DD_ prepended
       #+begin_src python :tangle test_date2name.py
@@ -656,10 +700,6 @@ def test_file_pattern_withtime(arg1, name=TFOLDER):
 
     + [X] retraction of the date/time stamp
 
-      Similar to the retraction of a prepended time stamp on files, the two
-      checks to remove a time stamp added by =--withtime= or =-w= currently fail
-      when running =pytest-3= on Linux Debian 12/bookworm, branch testing.
-
       #+begin_src python :tangle test_date2name.py
 @pytest.mark.folders
 @pytest.mark.remove
@@ -676,7 +716,6 @@ def test_folder_remove_stamp(arg1, arg2, name=TFOLDER):
                     "withtime": "2021-09-21T13.59.59"}
     prepend = substitution.get(arg1)
 
-    # os.mkdir(name)
     BASIS = str(name)
     stamped_folder = ""
     stamped_folder = "_".join([prepend, BASIS])
