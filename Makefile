@@ -13,10 +13,9 @@
 # chmod +x *
 # make ./Makefile
 #
-# to run the tests.  The test sequence will explicitly report if a test
-# was passed successfully, or failed.  If you want to script to stop on
-# the first encounter of a test failed, add option -x on the commands
-# set below
+# to run the tests.  If you want pytest to exit the test sequence
+# right after the first test failing, use the -x flag to the
+# instructions on the CLI in addition to the verbosity flag to (-v).
 
 # pytest -v test_date2name.py     # only pytest for Python 3 is present
 pytest-3 -v test_date2name.py   # pytest if Python 2 and Python 3 coexist
