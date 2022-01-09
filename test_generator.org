@@ -87,7 +87,7 @@
   : t
 
   If the previous block was evaluated as .TRUE. (=t=), test script and
-  Makefile may be tangled right now by =C-c C-t v=.  After closing
+  Makefile may be tangled right now by =C-c C-v t=.  After closing
   this =.org= file, deploy them as indicated earlier.
 
 * Building the tests
