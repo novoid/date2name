@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2021-11-25 15:25:10 vk>"
+PROG_VERSION = u"Time-stamp: <2022-01-10 12:56:17 vk>"
 
 """
 date2name
@@ -99,7 +99,8 @@ parser.add_option("--delimiter", dest="delimiter", metavar='DELIMITER_STRING',
                   'space, or underscore may result in not recognizing the delimiter ' +
                   'for further operations such as fixing slightly wrong formatted time-stamps.')
 parser.add_option("--nocorrections", dest="nocorrections", action="store_true",
-                  help="do not convert existing but slightly wrong formatted date/time-stamps to new format")
+                  help="do not convert existing but slightly wrong formatted date/time-stamps to new format. " +
+                  "E.g., when YYYY-MM-DD is used as format and YYYYMMDD is found in file name, it is not converted.")
 parser.add_option("-q", "--quiet", dest="quiet", action="store_true",
                   help="do not output anything but just errors on console")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
