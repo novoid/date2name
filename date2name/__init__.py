@@ -34,6 +34,8 @@ REGEX_PATTERNS = {
     'SHORT': re.compile('^(\d{2})([01]\d)([0123]\d)([- _])'),
     'COMPACT': re.compile('^(\d{4})([01]\d)([0123]\d)([- _])'),
     'STANDARD': re.compile('^(\d{4})-([01]\d)-([0123]\d)([- _])'),
+    'LONG': re.compile('^(\d{14})([- _])'),
+    'LONG_C': re.compile('^(\d{8})_(\d{6})([- _])'),
     'MONTH': re.compile('^(\d{4})-([01]\d)(?!-[0123]\d)([- _])'),
     'WITHTIME_AND_SECONDS': re.compile('^(\d{4})-([01]\d)-([0123]\d)([T :_-])([012]\d)([:.-])([012345]\d)([:.-])([012345]\d)([- _.])'),
     'WITHTIME_NO_SECONDS':  re.compile('^(\d{4})-([01]\d)-([0123]\d)([T :_-])([012]\d)([:.-])([012345]\d)([- _.])'),
@@ -158,6 +160,24 @@ def get_converted_basename(matched_pattern, item):
         else:
             # time-stamp only with hours and minutes:
             name_without_datestamp = item[16:]
+    elif matched_pattern == "long":
+        logging.debug("item \"%s\" matches long pattern, doing conversion" % item)
+        item_year = item[0:4]
+        item_month = item[4:6]
+        item_day = item[6:8]
+        item_time_hour = item[8:10]
+        item_time_minute = item[10:12]
+        item_time_second = item[12:14]
+        name_without_datestamp = item[14:]
+    elif matched_pattern == "long_c":
+        logging.debug("item \"%s\" matches long_c pattern, doing conversion" % item)
+        item_year = item[0:4]
+        item_month = item[4:6]
+        item_day = item[6:8]
+        item_time_hour = item[9:11]
+        item_time_minute = item[11:13]
+        item_time_second = item[13:15]
+        name_without_datestamp = item[15:]
     else:
         logging.error("unknown matched pattern (internal error)")
 
@@ -167,6 +187,12 @@ def get_converted_basename(matched_pattern, item):
         return item_year + item_month + item_day + name_without_datestamp
     elif options.month:
         return item_year + "-" + item_month + name_without_datestamp
+    elif options.withtime and matched_pattern == "long":
+        logging.debug("%s: Conversion to withtime-format and long format" % item)
+        return item_year + "-" + item_month + "-" + item_day + "T" + item_time_hour + "." + item_time_minute + "." + item_time_second + name_without_datestamp
+    elif options.withtime and matched_pattern == "long_c":
+        logging.debug("%s: Conversion to withtime-format and long_c format" % item)
+        return item_year + "-" + item_month + "-" + item_day + "T" + item_time_hour + "." + item_time_minute + "." + item_time_second + name_without_datestamp
     elif options.withtime:
         # FIXXME: probably implement some kind of conversion to withtime-format
         logging.warn("%s: Sorry! Conversion to withtime-format not implemented yet, taking standard format" % item)
@@ -240,6 +266,10 @@ def generate_new_basename(formatstring, basename):
         else:
             new_basename = get_converted_basename("standard", basename)
 
+    elif REGEX_PATTERNS['LONG_C'].match(basename):
+        logging.debug("basename \"%s\" matches long_c-pattern" % basename)
+        new_basename = get_converted_basename("long_c", basename)
+
     elif REGEX_PATTERNS['COMPACT'].match(basename):
         logging.debug("basename \"%s\" matches compact-pattern" % basename)
         if options.compact:
@@ -263,6 +293,10 @@ def generate_new_basename(formatstring, basename):
             return basename
         else:
             new_basename = get_converted_basename("month", basename)
+
+    elif REGEX_PATTERNS['LONG'].match(basename):
+        logging.debug("basename \"%s\" matches long-pattern" % basename)
+        new_basename = get_converted_basename("long", basename)
 
     else:
         logging.debug("basename \"%s\" does not match any known datestamp-pattern" % basename)
