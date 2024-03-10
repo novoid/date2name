@@ -1,0 +1,38 @@
+
+[project]
+readme = "README.org"
+keywords = ["file managing", "file management", "files", "date", "time", "time-stamps"]
+classifiers=[
+    "Programming Language :: Python :: 3 :: Only",
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License (GPL)",
+    "Operating System :: OS Independent",
+    ]
+authors = [{name="Karl Voit", email="tools@Karl-Voit.at"}]
+license = {file = "LICENSE.txt"}
+
+[project.urls]
+Homepage = "https://github.com/novoid/date2name"
+Repository = "https://github.com/novoid/date2name"
+Issues = "https://github.com/novoid/date2name/issues"
+
+[project.scripts]
+date2name="date2name:main"
+
+[tool.poetry]
+name = "date2name"
+version = "2024.03.10.1"
+description = "Handling time-stamps and date-stamps in file names"
+authors = ["Karl Voit <tools@Karl-Voit.at>"]
+license = "GPL v3"
+readme = "README.org"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
