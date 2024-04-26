@@ -26,7 +26,7 @@ date2name="date2name:main"
 
 [tool.poetry]
 name = "date2name"
-version = "2024.04.25.1.309"
+version = "2024.04.26.1"
 description = "Handling time-stamps and date-stamps in file names"
 authors = ["Karl Voit <tools@Karl-Voit.at>"]
 license = "GPL v3"
