@@ -26,14 +26,14 @@ date2name="date2name:main"
 
 [tool.poetry]
 name = "date2name"
-version = "2024.03.10.1"
+version = "2024.04.25.1.309"
 description = "Handling time-stamps and date-stamps in file names"
 authors = ["Karl Voit <tools@Karl-Voit.at>"]
 license = "GPL v3"
 readme = "README.org"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 
 [build-system]
 requires = ["poetry-core"]

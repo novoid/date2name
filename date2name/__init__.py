@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2022-01-10 12:56:17 vk>"
+PROG_VERSION = u"Time-stamp: <2024-04-25>"
 
 """
 date2name
