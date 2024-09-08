@@ -56,6 +56,8 @@ Then, you can
 1. get =date2name= manually from [[https://github.com/novoid/date2name][GitHub]] OR
 2. install it via =pip install date2name= which is simplest method.
 
+[[https://0dependencies.dev/0dependencies.svg]] → [[https://0dependencies.dev/][learn more about 0dependencies]]
+
 * Integration Into Common Tools
 
 ** Integration into Windows File Explorer
