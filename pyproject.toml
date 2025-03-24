@@ -1,5 +1,6 @@
 
 [project]
+name = "date2name"
 readme = "README.org"
 keywords = ["file managing", "file management", "files", "date", "time", "time-stamps"]
 classifiers=[
