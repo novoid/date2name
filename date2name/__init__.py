@@ -30,14 +30,14 @@ FORMATSTRING_STANDARD = "%Y-%m-%d"
 FORMATSTRING_MONTH    = "%Y-%m"
 FORMATSTRING_WITHTIME = "%Y-%m-%dT%H.%M.%S"
 REGEX_PATTERNS = {
-    'NODATESTAMP': re.compile('^\D'),
-    'SHORT': re.compile('^(\d{2})([01]\d)([0123]\d)([- _])'),
-    'COMPACT': re.compile('^(\d{4})([01]\d)([0123]\d)([- _])'),
-    'STANDARD': re.compile('^(\d{4})-([01]\d)-([0123]\d)([- _])'),
-    'MONTH': re.compile('^(\d{4})-([01]\d)(?!-[0123]\d)([- _])'),
-    'WITHTIME_AND_SECONDS': re.compile('^(\d{4})-([01]\d)-([0123]\d)([T :_-])([012]\d)([:.-])([012345]\d)([:.-])([012345]\d)([- _.])'),
-    'WITHTIME_NO_SECONDS':  re.compile('^(\d{4})-([01]\d)-([0123]\d)([T :_-])([012]\d)([:.-])([012345]\d)([- _.])'),
-    'WITHSECONDS': re.compile('^(\d{4})-([01]\d)-([0123]\d)([T :_-])([012]\d)([:.-])([012345]\d)([:.-])([012345]\d)([- _])'),
+    'NODATESTAMP': re.compile(r'^\D'),
+    'SHORT': re.compile(r'^(\d{2})([01]\d)([0123]\d)([- _])'),
+    'COMPACT': re.compile(r'^(\d{4})([01]\d)([0123]\d)([- _])'),
+    'STANDARD': re.compile(r'^(\d{4})-([01]\d)-([0123]\d)([- _])'),
+    'MONTH': re.compile(r'^(\d{4})-([01]\d)(?!-[0123]\d)([- _])'),
+    'WITHTIME_AND_SECONDS': re.compile(r'^(\d{4})-([01]\d)-([0123]\d)([T :_-])([012]\d)([:.-])([012345]\d)([:.-])([012345]\d)([- _.])'),
+    'WITHTIME_NO_SECONDS':  re.compile(r'^(\d{4})-([01]\d)-([0123]\d)([T :_-])([012]\d)([:.-])([012345]\d)([- _.])'),
+    'WITHSECONDS': re.compile(r'^(\d{4})-([01]\d)-([0123]\d)([T :_-])([012]\d)([:.-])([012345]\d)([:.-])([012345]\d)([- _])'),
 }
 MAX_PATHLENGTH = 255  # os.pathconf('/', 'PC_PATH_MAX') may be longer but os.rename() seems to have hard-coded 256
 
