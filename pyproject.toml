@@ -1,18 +1,19 @@
-
 [project]
 name = "date2name"
-readme = "README.org"
+description = "Handling time-stamps and date-stamps in file names"
+version = "2026.03.01.1"
+license = "GPL-3.0-or-later"
+readme = { file = "README.org", content-type = "text/plain" }
 keywords = ["file managing", "file management", "files", "date", "time", "time-stamps"]
 classifiers=[
     "Programming Language :: Python :: 3 :: Only",
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: End Users/Desktop",
-    "License :: OSI Approved :: GNU General Public License (GPL)",
     "Operating System :: OS Independent",
     ]
+requires-python = ">=3.13"
 authors = [{name="Karl Voit", email="tools@Karl-Voit.at"}]
-license = {file = "LICENSE.txt"}
 
 [project.urls]
 Homepage = "https://github.com/novoid/date2name"
@@ -22,21 +23,38 @@ Issues = "https://github.com/novoid/date2name/issues"
 [project.scripts]
 date2name="date2name:main"
 
-[tool.poetry.scripts]
-date2name="date2name:main"
-
-[tool.poetry]
+[[tool.uv.index]]
 name = "date2name"
-version = "2024.04.26.1"
-description = "Handling time-stamps and date-stamps in file names"
-authors = ["Karl Voit <tools@Karl-Voit.at>"]
-license = "GPL v3"
-readme = "README.org"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true
 
-[tool.poetry.dependencies]
-python = "^3.9"
+[tool.setuptools.packages.find]
+include = ["date2name*"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=78.1.0", "wheel>=0.45.1"]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+
+
+#[tool.poetry.scripts]
+#date2name="date2name:main"
+#
+#[tool.poetry]
+#name = "date2name"
+#version = "2024.04.26.1"
+#description = "Handling time-stamps and date-stamps in file names"
+#authors = ["Karl Voit <tools@Karl-Voit.at>"]
+#license = "GPL v3"
+#readme = "README.org"
+
 
