@@ -5,12 +5,22 @@ version = "2026.03.01.1"
 license = "GPL-3.0-or-later"
 readme = { file = "README.org", content-type = "text/plain" }
 keywords = ["file managing", "file management", "files", "date", "time", "time-stamps"]
+
+# https://pypi.org/classifiers/
 classifiers=[
-    "Programming Language :: Python :: 3 :: Only",
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
     "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     ]
 requires-python = ">=3.10"
 authors = [{name="Karl Voit", email="tools@Karl-Voit.at"}]
@@ -33,7 +43,7 @@ explicit = true
 include = ["date2name*"]
 
 [build-system]
-requires = ["setuptools>=78.1.0", "wheel>=0.45.1"]
+requires = ["setuptools>=78.1.0"]
 build-backend = "setuptools.build_meta"
 
 [dependency-groups]
