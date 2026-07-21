@@ -1,48 +1,49 @@
 name: CI_pytest_date2name
 
 # name    : pytest.yml
-# purpose : regularly run pytest on date2name
-# date    : [2025-04-02 Wed]
-# edit    :
+# purpose : lightpytest (latest Python interpreter as available to GitHub)
+
 
 on:
   push:
     branches:
-      - master           # additions to the principal branch
-      - dev              # additions to the branch of development
+      - master 
+      - dev
   pull_request:
     branches:
-      - master           # PRs to enter the principal branch
+      - master
   workflow_dispatch:     # provide a manual trigger
   # schedule:
     # - cron: "0 0 1 * *"  # once each 1st of a month, at 00:00 UTC (cf. https://crontab.guru/)
+
+# prevent concurrency of workflows (rule GH102):
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     strategy:
       matrix:
-        # for a factorial test, an explicit selection of GitHUb runner images
-        # https://github.com/actions/runner-images?tab=readme-ov-file#available-images
-        # state of commit 23478d3 as visited on 2024-11-11 Mon
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.10", "3.13"]
+        python-version: ["3.x"]
     runs-on: ${{ matrix.os }}
 
-    timeout-minutes: 5  # Timeout for each job individually
+    timeout-minutes: 10  # Timeout for each job individually
 
     steps:
       - uses: actions/checkout@v4
-        # by [2024-10-23 Wed], this version possibly will be considered "old", cf.
-        # https://github.blog/changelog/2023-09-22-github-actions-transitioning-from-node-16-to-node-20/
 
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies with PyPI
-        run: pip install -r requirements-dev.txt
+        run: | 
+          pip install pytest
+          pip install .
 
       - name: run the check by pytest
         run: |
-          python -m pytest -v
+          python -m pytest
 
