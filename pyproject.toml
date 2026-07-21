@@ -41,6 +41,31 @@ dev = [
     "pytest>=9.0.2",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0.2"
+]
+
+[tool.pytest]
+pythonpath = ["src"]
+testpaths = ["tests"]
+filterwarnings = ["ignore::pytest.PytestCacheWarning"]
+markers = [
+    "elementary:  elementary tests ahead of action on files/folders by date2name",
+    "files:       tests about affect by date2name on files",
+    "folders:     tests about affect by date2name on folders",
+    "default:     stamp pattern default, YYYY-MM-DD",
+    "compact:     stamp pattern compact, YYYYMMDD",
+    "month:       stamp pattern month, YYYY-MM",
+    "short:       stamp pattern short, YYMMDD",
+    "withtime:    stamp pattern withtime, YYYY-MM-DDThh.mm.ss",
+    "remove:      stamp retraction",
+]
+minversion = "9"
+log_level = "INFO"
+strict = true
+addopts = ["-ra"]
+
 [tool.mypy]
 strict = true
 ignore_missing_imports = true
