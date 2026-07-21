@@ -32,7 +32,7 @@ from subprocess import getstatusoutput, getoutput
 
 import pytest
 
-PROGRAM = str("./date2name/__init__.py")
+PROGRAM = os.path.join("date2name", "__init__.py")
 TFILE = str("test_file.txt")  # the intermediate test file written
 TFOLDER = str("test_folder")  # for complementary check on folders
 
