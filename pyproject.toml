@@ -12,7 +12,7 @@ classifiers=[
     "Intended Audience :: End Users/Desktop",
     "Operating System :: OS Independent",
     ]
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 authors = [{name="Karl Voit", email="tools@Karl-Voit.at"}]
 
 [project.urls]
