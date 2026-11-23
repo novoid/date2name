@@ -21,6 +21,7 @@ classifiers=[
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     ]
 requires-python = ">=3.10"
 authors = [{name="Karl Voit", email="tools@Karl-Voit.at"}]
@@ -43,17 +44,17 @@ explicit = true
 include = ["date2name*"]
 
 [build-system]
-requires = ["setuptools>=78.1.0"]
+requires = ["setuptools==84.2.1"]
 build-backend = "setuptools.build_meta"
 
 [dependency-groups]
 dev = [
-    "pytest>=9.0.2",
+    "pytest>=9.2.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=9.0.2"
+    "pytest>=9.2.0"
 ]
 
 [tool.pytest]

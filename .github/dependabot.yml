@@ -12,8 +12,8 @@ updates:
     cooldown:
       default-days: 7
 
-  # Maintain Python dependencies
-  - package-ecosystem: "pip"  # i.e. updates only in `pyproject.toml`
+  # Maintain Python dependencies in requirements.txt / pyproject.toml
+  - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "monthly"
